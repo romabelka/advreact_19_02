@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
 import {Route, NavLink} from 'react-router-dom'
 import SignInForm from '../../auth/sign-in-form'
 import SignUpForm from '../../auth/sign-up-form'
+import {signUp, signIn} from '../../../ducks/auth'
 
 class AuthRoute extends Component {
     static propTypes = {};
@@ -21,8 +23,8 @@ class AuthRoute extends Component {
         )
     }
 
-    handleSignIn = (value) => console.log(value)
-    handleSignUp = (value) => console.log(value)
+    handleSignIn = ({ email, password }) => this.props.signIn(email, password)
+    handleSignUp = ({ email, password }) => this.props.signUp(email, password)
 }
 
-export default AuthRoute
+export default connect(null, { signIn, signUp })(AuthRoute)
