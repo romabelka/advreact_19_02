@@ -30,7 +30,6 @@ class ClientRoute extends Component {
         )
     }
 
-    clientInit = () => this.props.clientInit()
     handleSubmit = ({ firstname, lastname, email }) => this.props.clientSubmit(firstname, lastname, email)
 }
 

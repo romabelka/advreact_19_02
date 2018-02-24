@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react'
 import {reduxForm, Field} from 'redux-form'
-
+import emailValidator from 'email-validator'
+import ErrorField from '../common/ErrorField'
 
 export class ClientsForm extends Component {
     constructor(props) {
@@ -12,13 +13,13 @@ export class ClientsForm extends Component {
             <form onSubmit = {this.props.handleSubmit}>
                 <h2>Client Form</h2>
                 <div>
-                    first name: <Field name = "firstname" component = "input" />
+                    <Field name = "firstname" label = "firstname" component = {ErrorField}/>
                 </div>
                 <div>
-                    last name: <Field name = "lastname" component = "input" />
+                    <Field name = "lastname" label = "lastname" component = {ErrorField} />
                 </div>
                 <div>
-                    email: <Field name = "email" component = "input" />
+                    <Field label = "email" name = "email" component = {ErrorField}/>
                 </div>
                 <button type = "submit">Submit</button>
             </form>
@@ -26,6 +27,20 @@ export class ClientsForm extends Component {
     }
 }
 
+const validate = ({firstname, lastname, email}) => {
+    const errors = {}
+
+    if (!email) errors.email = 'required field'
+    if (email && !emailValidator.validate(email)) errors.email = 'invalid email'
+
+    if (!firstname) errors.firstname = 'required field'
+
+    if (!lastname) errors.lastname = 'required field'
+
+    return errors
+}
+
 export default reduxForm({
-    form: 'client'
+    form: 'client',
+    validate
 })(ClientsForm)
