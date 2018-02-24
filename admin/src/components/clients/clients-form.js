@@ -9,16 +9,16 @@ export class ClientsForm extends Component {
 
     render() {
         return (
-            <form>
+            <form onSubmit = {this.props.handleSubmit}>
                 <h2>Client Form</h2>
                 <div>
-                    first name: <Field onChange={this.props.onChange} name = "firstname" component = "input" />
+                    first name: <Field name = "firstname" component = "input" />
                 </div>
                 <div>
-                    last name: <Field onChange={this.props.onChange} name = "lastname" component = "input" />
+                    last name: <Field name = "lastname" component = "input" />
                 </div>
                 <div>
-                    email: <Field onChange={this.props.onChange} name = "email" component = "input" />
+                    email: <Field name = "email" component = "input" />
                 </div>
                 <button type = "submit">Submit</button>
             </form>

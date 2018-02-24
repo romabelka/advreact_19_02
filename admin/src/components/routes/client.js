@@ -2,16 +2,12 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Route, NavLink} from 'react-router-dom'
 import ClientsForm from '../clients/clients-form'
-import {clientInit, clientUpdate} from '../../ducks/client'
+import {clientSubmit} from '../../ducks/client'
 
 class ClientRoute extends Component {
 
-    componentDidMount(){
-        this.clientInit()
-    }
-
     render() {
-        const {...props} = this.props
+
         return (
             <div>
                 <div>
@@ -27,26 +23,15 @@ class ClientRoute extends Component {
                 <div>
                     <Route
                         path = "/clients/clients"
-                        render = {() => <ClientsForm {...props} onChange = {this.handleFormChange}/>}
+                        render = {() => <ClientsForm onSubmit = {this.handleSubmit}/>}
                     />
                 </div>
             </div>
         )
     }
 
-    handleFormChange = (name, value) => {
-        let {client} = this.props;
-        client[name] = value;
-        this.props.clientUpdate(client)
-    }
-
     clientInit = () => this.props.clientInit()
+    handleSubmit = ({ firstname, lastname, email }) => this.props.clientSubmit(firstname, lastname, email)
 }
 
-const mapStateToProps = ({client}) => {
-    return {
-        client,
-    }
-}
-
-export default connect(mapStateToProps, { clientInit, clientUpdate })(ClientRoute)
+export default connect(null, { clientSubmit })(ClientRoute)
