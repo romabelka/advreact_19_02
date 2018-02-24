@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import {Route, NavLink} from 'react-router-dom'
 import AddCustomerForm from '../customers/add-customer-form.js'
-import {addCustomer } from '../../ducks/add-customer'
-import {connect} from 'react-redux'
 
 class CustomerRoute extends Component {
 
@@ -23,4 +21,4 @@ class CustomerRoute extends Component {
     }
 }
 
-export default connect(null, {addCustomer})(CustomerRoute)
+export default CustomerRoute
