@@ -1,5 +1,6 @@
 import {appName} from '../config'
 import {Record} from 'immutable'
+import {reset} from 'redux-form';
 
 /**
  * Constants
@@ -36,7 +37,13 @@ export const userSelector = state => state[moduleName].client
  * Action Creators
  * */
 
-export const clientSubmit = (props) => ({
-    type: CLIENT_ADD_SUCCESS,
-    payload: props
-})
+export const clientSubmit = (props) => {
+    return (dispatch) => {
+        dispatch({
+            type: CLIENT_ADD_SUCCESS,
+            payload: props
+        })
+
+        dispatch(reset('client'))
+    }
+}

@@ -29,7 +29,6 @@ class ClientRoute extends Component {
             </div>
         )
     }
-
     handleSubmit = ({ firstname, lastname, email }) => this.props.clientSubmit(firstname, lastname, email)
 }
 
