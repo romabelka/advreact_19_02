@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import {reduxForm, Field} from 'redux-form'
-import emailValidator from 'email-validator'
+import validator, {VALIDATORS} from '../../utils/validaton'
 import ErrorField from '../common/ErrorField'
-
 
 class SignUpForm extends Component {
     static propTypes = {
@@ -24,11 +23,15 @@ class SignUpForm extends Component {
 const validate = ({ email, password }) => {
     const errors = {}
 
-    if (!email) errors.email = 'required field'
-    if (email && !emailValidator.validate(email)) errors.email = 'invalid email'
+    const emailErrors = validator.validate(email, 'Email', [VALIDATORS.REQUIRED, VALIDATORS.EMAIL])
+    if(emailErrors){
+        errors.email = emailErrors
+    }
 
-    if (!password) errors.password = 'password is a required field'
-    if (password && password.length < 8) errors.password = 'password is to short'
+    const passwordErrors = validator.validate(password, 'Password', [VALIDATORS.REQUIRED, VALIDATORS.STRIG_LENGTH], 8, 10)
+    if(passwordErrors){
+        errors.password = passwordErrors
+    }
 
     return errors
 }
