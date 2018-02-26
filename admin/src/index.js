@@ -7,6 +7,7 @@ import {Provider} from 'react-redux'
 import {ConnectedRouter} from 'react-router-redux'
 import store from './redux/store'
 import history from './history'
+import './mocks'
 
 ReactDOM.render(
     <Provider store = {store}>
