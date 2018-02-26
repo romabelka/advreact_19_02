@@ -24,7 +24,7 @@ export default function reducer(state = new ReducerRecord(), action) {
     const {type, payload} = action
 
     switch (type) {
-        case SIGN_UP_SUCCESS:
+        case SIGN_IN_START:
         case SIGN_IN_SUCCESS:
             return state.set('user', payload)
         default:
