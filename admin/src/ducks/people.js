@@ -2,13 +2,16 @@ import {appName} from '../config'
 import {Record, List} from 'immutable'
 import {reset} from 'redux-form'
 import {createSelector} from 'reselect'
+import {takeEvery, put, call} from 'redux-saga/effects'
+import {generateId} from './utils'
 
 /**
  * Constants
  * */
 export const moduleName = 'people'
 const prefix = `${appName}/${moduleName}`
-export const ADD_PERSON = `${prefix}/ADD_PERSON`
+export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
+export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
 /**
  * Reducer
@@ -28,8 +31,8 @@ export default function reducer(state = new ReducerState(), action) {
     const {type, payload} = action
 
     switch (type) {
-        case ADD_PERSON:
-            return state.update('entities', entities => entities.push(new PersonRecord(payload.person)))
+        case ADD_PERSON_SUCCESS:
+            return state.update('entities', entities => entities.push(new PersonRecord(payload)))
 
         default:
             return state
@@ -40,12 +43,20 @@ export default function reducer(state = new ReducerState(), action) {
  * */
 
 export const stateSelector = state => state[moduleName]
-export const peopleSelector = createSelector(stateSelector, state => state.entities.valueSeq().toArray())
+export const peopleSelector = createSelector(stateSelector, state => state.entities.toArray())
 
 /**
  * Action Creators
  * */
 
+export function addPerson(person) {
+    return {
+        type: ADD_PERSON_REQUEST,
+        payload: person
+    }
+}
+
+/*
 export function addPerson(person) {
     return (dispatch) => {
         dispatch({
@@ -57,4 +68,25 @@ export function addPerson(person) {
 
         dispatch(reset('person'))
     }
+}
+*/
+
+/**
+ * Sagas
+ **/
+
+export const addPersonSaga = function * (action) {
+    const id = yield call(generateId)
+
+    yield put({
+        type: ADD_PERSON_SUCCESS,
+        payload: {id, ...action.payload}
+    })
+
+    yield put(reset('person'))
+
+}
+
+export const saga = function * () {
+    yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga)
 }
