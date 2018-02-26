@@ -26,8 +26,6 @@ const validate = ({firstName, lastName, email}) => {
   if (email && !emailValidator.validate(email)) errors.email = "Invalid email"
 }
 
-const onSubmitSuccess = (result, dispatch) => dispatch(reset('addUser'))
-
 export default reduxForm({
   form: 'addUser', 
   validate,
