@@ -14,15 +14,18 @@ export const CLIENT_ADD_SUCCESS = `${prefix}/CLIENT_ADD_SUCCESS`
  * Reducer
  * */
 export const ReducerRecord = Record({
-    client: {}
+    client: []
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
     const {type, payload} = action
-
+    let client = state.get('client')
     switch (type) {
-        case CLIENT_ADD_SUCCESS:
-            return state.set('client', payload)
+        case CLIENT_ADD_SUCCESS:{
+            console.log(payload)
+            return state.set('client', client.concat([payload]))
+        }
+
         default:
             return state
     }
