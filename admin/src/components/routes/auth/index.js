@@ -14,7 +14,9 @@ class AuthRoute extends Component {
                 <div>
                    <div><NavLink to = "/auth/sign-in" activeStyle = {{ color: 'red' }}>Sign In</NavLink></div>
                    <div><NavLink to = "/auth/sign-up" activeStyle = {{ color: 'red' }}>Sign Up</NavLink></div>
+                   <div><NavLink to = "/clients/client" activeStyle = {{ color: 'red' }}>Clients</NavLink></div>
                 </div>
+                <h1>Authentication</h1>
                 <div>
                     <Route path = "/auth/sign-in" render = {() => <SignInForm onSubmit = {this.handleSignIn}/>}/>
                     <Route path = "/auth/sign-up" render = {() => <SignUpForm onSubmit = {this.handleSignUp}/>}/>
