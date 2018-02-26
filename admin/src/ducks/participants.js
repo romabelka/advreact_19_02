@@ -13,7 +13,7 @@ export const ReducerRecord = Record({
 
 export default function reducer(state = new ReducerRecord(), action) {
     const {type, payload} = action
-    console.log(type, payload)
+
     switch (type) {
         case PARTICIPANT_CREATE_START:
         case PARTICIPANT_CREATE_SUCCESS:
@@ -29,7 +29,6 @@ export function create(name, lastName, email) {
     return (dispatch, getState) => {
         const state = getState().participants
         const { participants } = state
-        console.log(participants)
 
         dispatch({
             type: PARTICIPANT_CREATE_START,
