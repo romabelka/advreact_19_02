@@ -7,9 +7,11 @@ import {
 	SIGN_IN_START,
 	SIGN_IN_SUCCESS,
 	signUpSaga,
-	signInSaga
+	signInSaga,
+	successRedirectURL
 } from './auth'
 
+import {push} from 'react-router-redux'
 import firebase from 'firebase'
 
 describe('Auth duck', () => {
@@ -62,6 +64,8 @@ describe('Auth duck', () => {
 			type: SIGN_IN_SUCCESS,
 			payload: user
 		}))
+
+		expect(sagaGen.next(user).value).toEqual(put(push(successRedirectURL)))
 
 		// This saga is endless
 		expect(sagaGen.next().value).toEqual(take(SIGN_IN_REQUEST))

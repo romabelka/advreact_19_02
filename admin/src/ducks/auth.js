@@ -2,12 +2,15 @@ import {appName} from '../config'
 import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
 import {Record} from 'immutable'
 import firebase from 'firebase'
+import {push} from 'react-router-redux'
 
 /**
  * Constants
  * */
 export const moduleName = 'auth'
 const prefix = `${appName}/${moduleName}`
+
+export const successRedirectURL = '/people'
 
 export const SIGN_IN_REQUEST = `${prefix}/SIGN_IN_REQUEST`
 export const SIGN_IN_START = `${prefix}/SIGN_IN_START`
@@ -90,6 +93,9 @@ export const signInSaga = function * () {
                 type: SIGN_IN_SUCCESS,
                 payload: user
             })
+
+			yield put(push(successRedirectURL))
+
         } catch (error) {
             yield put({
                 type: SIGN_IN_ERROR,
