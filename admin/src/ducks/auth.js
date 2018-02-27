@@ -2,6 +2,7 @@ import {appName} from '../config'
 import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
 import {Record} from 'immutable'
 import firebase from 'firebase'
+import history from '../history'
 
 /**
  * Constants
@@ -62,10 +63,13 @@ export function signUp(email, password) {
 }
 
 firebase.auth().onAuthStateChanged(user => {
-    if (user) window.store.dispatch({
-        type: SIGN_IN_SUCCESS,
-        payload: user
-    })
+    if (user) {
+	    window.store.dispatch({
+		    type: SIGN_IN_SUCCESS,
+		    payload: user
+	    })
+	    history.push('/people')
+    }
 })
 
 /**
@@ -90,6 +94,9 @@ export const signInSaga = function * () {
                 type: SIGN_IN_SUCCESS,
                 payload: user
             })
+
+            yield call(history.push, '/people')
+
         } catch (error) {
             yield put({
                 type: SIGN_IN_ERROR,
@@ -114,6 +121,9 @@ export const signUpSaga = function * ({ payload }) {
             type: SIGN_UP_SUCCESS,
             payload: user
         })
+
+	    yield call(history.push, '/people')
+
     } catch (error) {
         yield put({
             type: SIGN_UP_ERROR,
