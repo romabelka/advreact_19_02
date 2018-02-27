@@ -2,6 +2,8 @@ import {appName} from '../config'
 import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
 import {Record} from 'immutable'
 import firebase from 'firebase'
+import { push } from 'react-router-redux'
+import {PeopleRoute} from "../App";
 
 /**
  * Constants
@@ -122,9 +124,14 @@ export const signUpSaga = function * ({ payload }) {
     }
 }
 
+export const redirectSaga = function * () {
+    yield put(push(PeopleRoute))
+}
+
 export const saga = function * () {
     yield all([
         signInSaga(),
-        takeEvery(SIGN_UP_REQUEST, signUpSaga)
+        takeEvery(SIGN_UP_REQUEST, signUpSaga),
+        takeEvery(SIGN_IN_SUCCESS, redirectSaga)
     ])
 }
