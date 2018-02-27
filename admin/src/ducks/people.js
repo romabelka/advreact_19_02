@@ -1,54 +1,92 @@
-import { appName } from '../config'
-import { Record } from 'immutable'
+import {appName} from '../config'
+import {Record, List} from 'immutable'
 import {reset} from 'redux-form'
+import {createSelector} from 'reselect'
+import {takeEvery, put, call} from 'redux-saga/effects'
+import {generateId} from './utils'
+
 /**
  * Constants
  * */
 export const moduleName = 'people'
 const prefix = `${appName}/${moduleName}`
-
-export const ADD_PEOPLE_START = `${prefix}/ADD_PEOPLE_START`
-export const ADD_PEOPLE_SUCCESS = `${prefix}/ADD_PEOPLE_SUCCESS`
+export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
+export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
 /**
  * Reducer
  * */
-export const ReducerRecord = Record({
-    people: []
+const ReducerState = Record({
+    entities: new List([])
 })
 
-export default function reducer(state = new ReducerRecord(), action) {
-    const { type, payload } = action
+const PersonRecord = Record({
+    id: null,
+    firstName: null,
+    lastName: null,
+    email: null
+})
+
+export default function reducer(state = new ReducerState(), action) {
+    const {type, payload} = action
 
     switch (type) {
-        case ADD_PEOPLE_SUCCESS:
-            return state.set('people', state.get('people').concat([payload]))
+        case ADD_PERSON_SUCCESS:
+            return state.update('entities', entities => entities.push(new PersonRecord(payload)))
+
         default:
             return state
     }
 }
-
 /**
  * Selectors
  * */
-export const peopleSelector = state => state[moduleName].people
+
+export const stateSelector = state => state[moduleName]
+export const peopleSelector = createSelector(stateSelector, state => state.entities.toArray())
 
 /**
  * Action Creators
  * */
 
-export function addPeople(firstName, lastName, email) {
+export function addPerson(person) {
+    return {
+        type: ADD_PERSON_REQUEST,
+        payload: person
+    }
+}
+
+/*
+export function addPerson(person) {
     return (dispatch) => {
         dispatch({
-            type: ADD_PEOPLE_START,
-            payload: { firstName, lastName, email }
+            type: ADD_PERSON,
+            payload: {
+                person: {id: Date.now(), ...person}
+            }
         })
 
-        dispatch({
-            type: ADD_PEOPLE_SUCCESS,
-            payload: { firstName, lastName, email }
-        })
-        dispatch(reset('addPeopleForm'))
-        
+        dispatch(reset('person'))
     }
+}
+*/
+
+/**
+ * Sagas
+ **/
+
+export const addPersonSaga = function * (action) {
+    const id = yield call(generateId)
+
+    yield put({
+        type: ADD_PERSON_SUCCESS,
+        payload: {id, ...action.payload}
+    })
+
+    yield put(reset('person'))
+
+}
+
+export const saga = function * () {
+    yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga)
 }

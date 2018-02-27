@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
-import { Route } from 'react-router-dom'
-import { connect } from 'react-redux'
-import { userSelector } from '../../ducks/auth'
+import {Route} from 'react-router-dom'
+import {connect} from 'react-redux'
+import {userSelector} from '../../ducks/auth'
 
 class ProtectedRoute extends Component {
+    static propTypes = {
+
+    };
+
     render() {
-        const { component, ...rest } = this.props
-        return <Route {...rest} render={this.getComponent} />
+        const {component, ...rest} = this.props
+        return <Route {...rest} render = {this.getComponent}/>
     }
 
     getComponent = (...args) => {

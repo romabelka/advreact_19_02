@@ -9,7 +9,6 @@
 # production
 /build
 
-
 # misc
 .idea
 .DS_Store
