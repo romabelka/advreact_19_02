@@ -1,5 +1,6 @@
 import {appName} from '../config'
 import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
+import {push} from 'react-router-redux'
 import {Record} from 'immutable'
 import firebase from 'firebase'
 
@@ -61,16 +62,41 @@ export function signUp(email, password) {
     }
 }
 
-firebase.auth().onAuthStateChanged(user => {
-    if (user) window.store.dispatch({
-        type: SIGN_IN_SUCCESS,
-        payload: user
+export function connect(auth) {
+    return new Promise((resolve, reject) => {
+        auth.onAuthStateChanged(function (user) {
+            if (user) {
+                resolve(user)
+            } else {
+                reject({error: 'user unauthorized'})
+            }
+        })
     })
-})
+}
 
 /**
  * Sagas
  **/
+export const checkAuthSaga = function* () {
+    try {
+        const auth = firebase.auth()
+        const user = yield call(connect, auth)
+
+        yield put({
+            type: SIGN_IN_SUCCESS,
+            payload: user
+        })
+
+        yield put(push('/people'))
+
+    } catch (error) {
+        yield put({
+            type: SIGN_IN_ERROR,
+            error
+        })
+    }
+}
+
 
 export const signInSaga = function * () {
     while (true) {
@@ -90,6 +116,9 @@ export const signInSaga = function * () {
                 type: SIGN_IN_SUCCESS,
                 payload: user
             })
+
+            yield put(push('/people'))
+
         } catch (error) {
             yield put({
                 type: SIGN_IN_ERROR,
@@ -114,6 +143,7 @@ export const signUpSaga = function * ({ payload }) {
             type: SIGN_UP_SUCCESS,
             payload: user
         })
+
     } catch (error) {
         yield put({
             type: SIGN_UP_ERROR,
@@ -124,6 +154,7 @@ export const signUpSaga = function * ({ payload }) {
 
 export const saga = function * () {
     yield all([
+        checkAuthSaga(),
         signInSaga(),
         takeEvery(SIGN_UP_REQUEST, signUpSaga)
     ])
