@@ -77,6 +77,9 @@ describe('Авторизация', () => {
     it(`4. Эффект put c экшеном SIGN_IN_SUCCESS`, () => {
       expect(saga.next().value['PUT'].action.type).toEqual(SIGN_IN_SUCCESS)
     })
+    it(`5. Эффект put c экшеном push('/people')`, () => {
+      expect(saga.next().value['PUT'].action.type).toEqual(`@@router/CALL_HISTORY_METHOD`)
+    })
     it('6. Сага авторизации отработала и вернулась к ожиданию экшена SIGN_IN_REQUEST', () => {
       const iterator = saga.next()
       expect(iterator.done).toEqual(false)

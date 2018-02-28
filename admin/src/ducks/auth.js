@@ -2,6 +2,7 @@ import {appName} from '../config'
 import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
 import {Record} from 'immutable'
 import firebase from 'firebase'
+import {push} from 'react-router-redux'
 
 /**
  * Constants
@@ -90,6 +91,8 @@ export const signInSaga = function * () {
                 type: SIGN_IN_SUCCESS,
                 payload: user
             })
+            yield put(push(`/people`))
+
         } catch (error) {
             yield put({
                 type: SIGN_IN_ERROR,
