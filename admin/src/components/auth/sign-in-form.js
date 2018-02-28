@@ -3,7 +3,6 @@ import {reduxForm, Field} from 'redux-form'
 import ErrorField, {validate} from '../common/ErrorField'
 
 
-
 class SignInForm extends Component {
 
     render() {

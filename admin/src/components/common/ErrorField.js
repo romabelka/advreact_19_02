@@ -4,11 +4,11 @@ import emailValidator from 'email-validator'
 class ErrorFiled extends Component {
     render() {
         const { input, type, label, meta: { error, touched } } = this.props
-        const errorText = error && touched && <h4 style={{ color: 'red' }}>{error}</h4>
+        const errorText = error && touched && <h4 style = {{ color: 'red' }}>{error}</h4>
         return (
             <div>
                 <div>
-                    {label}: <input {...input} type={type} />
+                    {label}: <input {...input} type = {type} />
                 </div>
                 {errorText}
             </div>
