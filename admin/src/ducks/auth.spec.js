@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 import { apply, call, put, take } from 'redux-saga/effects'
+import { push } from 'react-router-redux'
 import reducer, {
     moduleName, ReducerRecord,
     userSelector, signInSaga, signUpSaga,
@@ -112,6 +113,8 @@ describe('Auth duck', () => {
                 type: SIGN_IN_SUCCESS,
                 payload: user,
             }))
+
+            expect(sagaGen.next().value).toEqual(put(push('/people')))
 
             // expect(sagaGen.next().done).toEqual(true)
 
