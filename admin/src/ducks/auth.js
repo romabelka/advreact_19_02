@@ -1,7 +1,7 @@
-import { appName } from '../config'
-import { all, take, takeEvery, put, call, apply } from 'redux-saga/effects'
-import { push } from 'react-router-redux'
-import { Record } from 'immutable'
+import {appName} from '../config'
+import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
+import {push} from 'react-router-redux'
+import {Record} from 'immutable'
 import firebase from 'firebase'
 
 /**
@@ -19,8 +19,6 @@ export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`
 export const SIGN_UP_START = `${prefix}/SIGN_UP_START`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
-export const ROUTING = `${prefix}/ROUTING`
-
 
 /**
  * Reducer
@@ -30,7 +28,7 @@ export const ReducerRecord = Record({
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
-    const { type, payload } = action
+    const {type, payload} = action
 
     switch (type) {
         case SIGN_UP_SUCCESS:
@@ -100,9 +98,9 @@ export const checkAuthSaga = function* () {
 }
 
 
-export const signInSaga = function* () {
+export const signInSaga = function * () {
     while (true) {
-        const { payload } = yield take(SIGN_IN_REQUEST)
+        const {payload} = yield take(SIGN_IN_REQUEST)
 
         yield put({
             type: SIGN_IN_START,
@@ -130,7 +128,7 @@ export const signInSaga = function* () {
     }
 }
 
-export const signUpSaga = function* ({ payload }) {
+export const signUpSaga = function * ({ payload }) {
     yield put({
         type: SIGN_UP_START,
         payload
@@ -154,8 +152,7 @@ export const signUpSaga = function* ({ payload }) {
     }
 }
 
-
-export const saga = function* () {
+export const saga = function * () {
     yield all([
         checkAuthSaga(),
         signInSaga(),

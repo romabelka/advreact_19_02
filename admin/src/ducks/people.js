@@ -56,9 +56,24 @@ export function addPerson(person) {
     }
 }
 
+/*
+export function addPerson(person) {
+    return (dispatch) => {
+        dispatch({
+            type: ADD_PERSON,
+            payload: {
+                person: {id: Date.now(), ...person}
+            }
+        })
+
+        dispatch(reset('person'))
+    }
+}
+*/
+
 /**
  * Sagas
- * */
+ **/
 
 export const addPersonSaga = function * (action) {
     const id = yield call(generateId)
