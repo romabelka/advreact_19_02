@@ -60,7 +60,7 @@ export const stateSelector = state => state[moduleName]
 export const entitiesSelector = createSelector(stateSelector, state => state.entities)
 export const loadingSelector = createSelector(stateSelector, state => state.loading)
 export const loadedSelector = createSelector(stateSelector, state => state.loaded)
-export const eventListSelector = createSelector(entitiesSelector, entities => entities.toArray())
+export const eventListSelector = createSelector(entitiesSelector, entities => entities.valueSeq().toArray())
 
 /**
  * Action Creators
