@@ -1,9 +1,10 @@
-import {all, takeEvery, put, call} from 'redux-saga/effects'
+import {all, takeEvery, put, call, throttle, take} from 'redux-saga/effects'
 import {appName} from '../config'
 import {Record, List, OrderedSet} from 'immutable'
 import firebase from 'firebase'
 import {createSelector} from 'reselect'
 import {fbToEntities} from './utils'
+import {SIGN_IN_SUCCESS} from "./auth";
 
 /**
  * Constants
@@ -15,8 +16,16 @@ export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
+export const FETCH_LIMITED_REQUEST = `${prefix}/FETCH_LIMITED_REQUEST`
+export const FETCH_LIMITED_START = `${prefix}/FETCH_LIMITED_START`
+export const FETCH_LIMITED_SUCCESS = `${prefix}/FETCH_LIMITED_SUCCESS`
+
+export const FETCH_COUNT_START = `${prefix}/FETCH_COUNT_START`
+export const FETCH_COUNT_SUCCESS = `${prefix}/FETCH_COUNT_SUCCESS`
+
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
+export const PageSize = 20
 /**
  * Reducer
  * */
@@ -24,7 +33,8 @@ export const ReducerRecord = Record({
     loading: false,
     loaded: false,
     selected: new OrderedSet(),
-    entities: new List([])
+    entities: new List([]),
+    eventsCount: PageSize
 })
 
 export const EventRecord = Record({
@@ -41,8 +51,12 @@ export default function reducer(state = new ReducerRecord(), action) {
     const {type, payload} = action
 
     switch (type) {
-        case FETCH_ALL_START:
-            return state.set('loading', true)
+        case FETCH_LIMITED_SUCCESS:
+            return state
+                .set('loading', false)
+                .set('loaded', true)
+                .update('entities', entities => entities.concat(fbToEntities(payload, EventRecord)))
+
 
         case FETCH_ALL_SUCCESS:
             return state
@@ -55,6 +69,9 @@ export default function reducer(state = new ReducerRecord(), action) {
                 ? selected.remove(payload.uid)
                 : selected.add(payload.uid)
             )
+
+        case FETCH_COUNT_SUCCESS:
+            return state.set('eventsCount', payload)
 
         default:
             return state
@@ -74,6 +91,7 @@ export const eventListSelector = createSelector(entitiesSelector, entities => en
 export const selectedEventsList = createSelector(entitiesSelector, selectedEventsIds,
     (entities, ids) => ids.map(id => entities.get(id))
 )
+export const eventsCountSelector = createSelector(stateSelector, state => state.eventsCount)
 
 /**
  * Action Creators
@@ -88,7 +106,14 @@ export function fetchAllEvents() {
 export function selectEvent(uid) {
     return {
         type: SELECT_EVENT,
-        payload: { uid }
+        payload: {uid}
+    }
+}
+
+export function fetchRows(key) {
+    return {
+        type: FETCH_LIMITED_REQUEST,
+        payload: {key}
     }
 }
 
@@ -111,8 +136,52 @@ export function* fetchAllSaga() {
     })
 }
 
-export function * saga() {
+export function* fetchLimitedSaga(action) {
+    let query = firebase.database().ref('events').orderByKey().limitToFirst(PageSize);
+    if(action.payload.key){
+        console.log('---key', action.payload.key)
+        firebase.database().ref('events').orderByKey().limitToFirst(PageSize).startAt(action.payload.key).once('value')
+            .then(dataSnapshot => console.log('---test', dataSnapshot.val()));
+        query = query.startAt(action.payload.key)
+    }
+
+    yield put({
+        type: FETCH_LIMITED_START
+    })
+
+    let snapshot = yield call([query, query.once], 'value')
+
+    yield put({
+        type: FETCH_LIMITED_SUCCESS,
+        payload: snapshot.val()
+    })
+}
+
+export function* fetchEventsCountSaga() {
+    yield take(FETCH_LIMITED_REQUEST)
+    /*
+    * Unfortunately firebase does not have functionality to get COUNT()
+    * https://stackoverflow.com/questions/15148803/in-firebase-is-there-a-way-to-get-the-number-of-children-of-a-node-without-load
+    * */
+    const ref = firebase.database().ref('events')
+
+    yield put({
+        type: FETCH_COUNT_START
+    })
+
+    const snapshot = yield call([ref, ref.once], 'value')
+
+    yield put({
+        type: FETCH_COUNT_SUCCESS,
+        payload: snapshot.numChildren()
+    })
+}
+
+export function* saga() {
     yield all([
-        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga)
+        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+        //throttle(5000, FETCH_LIMITED_REQUEST, fetchEventsCountSaga),
+        fetchEventsCountSaga(),
+        takeEvery(FETCH_LIMITED_REQUEST, fetchLimitedSaga)
     ])
 }
