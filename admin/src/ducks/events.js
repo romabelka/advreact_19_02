@@ -1,10 +1,9 @@
-import {all, takeEvery, put, call, throttle, take} from 'redux-saga/effects'
+import {all, takeEvery, put, call, take} from 'redux-saga/effects'
 import {appName} from '../config'
 import {Record, List, OrderedSet} from 'immutable'
 import firebase from 'firebase'
 import {createSelector} from 'reselect'
 import {fbToEntities} from './utils'
-import {SIGN_IN_SUCCESS} from "./auth";
 
 /**
  * Constants
