@@ -33,6 +33,7 @@ export class EventsTableVirtualized extends Component {
                         headerHeight={100}
                         overscanRowCount={0}
                         onRowsRendered={onRowsRendered}
+                        onRowClick = {this.onRowClick}
                     >
                         <Column dataKey="title" label="Event Name" width={400}/>
                         <Column dataKey="when" label="Month" width={300}/>
@@ -49,6 +50,9 @@ export class EventsTableVirtualized extends Component {
     loadMoreRows = ({startIndex, stopIndex}) => {
         this.props.fetchSomeEvents(startIndex, stopIndex)
     }
+
+    onRowClick = ({ rowData: { uid } }) => this.props.selectEvent(uid)
+
 }
 
 export default connect((state) => ({
