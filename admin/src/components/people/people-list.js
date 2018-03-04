@@ -1,20 +1,32 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { List } from 'react-virtualized'
 import { peopleSelector } from '../../ducks/people'
 
 class PeopleList extends Component {
-    static propTypes = {
-
-    };
+    static propTypes = {};
 
     render() {
+        return <List
+            width={600}
+            height={400}
+            rowCount={this.props.people.length}
+            rowHeight={200}
+            overscanRowCount={2}
+            rowRenderer={this.rowRenderer}
+        />
+    }
+
+    rowRenderer = ({index, style}) => {
+        const person = this.props.people[index]
+
         return (
-            <div>
-                {this.props.people.map(person =>
-                    <li key={person.id}>{person.firstName}: {person.email}</li>
-                )}
+            <div style = {style}>
+                <h2>{person.email}</h2>
+                <h4>{person.firstName} {person.lastName}</h4>
             </div>
         )
+
     }
 }
 
