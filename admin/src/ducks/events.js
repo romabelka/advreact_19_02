@@ -76,8 +76,7 @@ export const selectedEventsIds = createSelector(stateSelector, state => state.se
 export const loadingSelector = createSelector(stateSelector, state => state.loading)
 export const loadedSelector = createSelector(stateSelector, state => state.loaded)
 export const eventListSelector = createSelector(entitiesSelector, entities => entities.valueSeq().toArray())
-export const selectedEventsList = createSelector(
-    entitiesSelector, selectedEventsIds,
+export const selectedEventsList = createSelector(entitiesSelector, selectedEventsIds,
     (entities, ids) => ids.map(id => entities.get(id))
 )
 export const eventsCountSelector = createSelector(stateSelector, state => state.eventsCount)
@@ -141,7 +140,7 @@ export function* fetchEventsCountSaga() {
     })
 }
 
-export function* saga() {
+export function * saga() {
     yield all([
         fetchEventsCountSaga(),
         takeEvery(FETCH_LIMITED_REQUEST, fetchLimitedSaga)

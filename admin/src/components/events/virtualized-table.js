@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {Table, Column, InfiniteLoader} from 'react-virtualized'
 import {selectEvent, eventListSelector, loadingSelector, eventsCountSelector, fetchRows, PageSize
@@ -7,7 +7,9 @@ import Loader from '../common/Loader'
 import 'react-virtualized/styles.css'
 
 export class EventsTableVirtualized extends Component {
-    static propTypes = {};
+    static propTypes = {
+
+    };
 
     componentDidMount() {
         this.props.fetchRows()
@@ -15,7 +17,7 @@ export class EventsTableVirtualized extends Component {
 
     render() {
         const {loading, eventsCount} = this.props
-        if (loading) return <Loader/>
+        if (loading) return <Loader />
 
         return (
             <InfiniteLoader
@@ -46,7 +48,7 @@ export class EventsTableVirtualized extends Component {
         )
     }
 
-    rowGetter = ({index}) => {
+    rowGetter = ({ index }) => {
         const row = this.props.events[index]
         return row ? row : {}
     }
