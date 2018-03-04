@@ -33,7 +33,7 @@ describe('EventsTable Component', () => {
         const wrapper = mount(
             <EventsTableVirtualized
                 events={events}
-                electEvent={selectEvent}
+                selectEvent={selectEvent}
                 fetchSomeEvents={() => ({})}/>,
             { disableLifecycleMethods: true },
         )
