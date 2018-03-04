@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { List } from 'react-virtualized'
-import { peopleSelector } from '../../ducks/people'
+import { peopleSelector, loadPersons } from '../../ducks/people'
 
 class PeopleList extends Component {
     static propTypes = {};
+
+    componentDidMount(){
+        this.props.loadPersons()
+    }
 
     render() {
         return <List
@@ -21,7 +25,7 @@ class PeopleList extends Component {
         const person = this.props.people[index]
 
         return (
-            <div style = {style}>
+            <div key={person.uid} style = {style}>
                 <h2>{person.email}</h2>
                 <h4>{person.firstName} {person.lastName}</h4>
             </div>
@@ -32,4 +36,4 @@ class PeopleList extends Component {
 
 export default connect(state => ({
     people: peopleSelector(state)
-}))(PeopleList)
+}), {loadPersons})(PeopleList)

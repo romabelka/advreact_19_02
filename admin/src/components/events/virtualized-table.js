@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import {Table, Column} from 'react-virtualized'
-import {fetchAllEvents, selectEvent, eventListSelector, loadedSelector, loadingSelector} from '../../ducks/events'
+import {Table, Column, InfiniteLoader} from 'react-virtualized'
+import {selectEvent, eventListSelector, loadingSelector, eventsCountSelector, fetchRows, PageSize
+} from '../../ducks/events'
 import Loader from '../common/Loader'
 import 'react-virtualized/styles.css'
 
@@ -11,33 +12,63 @@ export class EventsTableVirtualized extends Component {
     };
 
     componentDidMount() {
-        this.props.fetchAllEvents()
+        this.props.fetchRows()
     }
 
     render() {
-        const {loading, events} = this.props
+        const {loading, eventsCount} = this.props
         if (loading) return <Loader />
+
         return (
-            <Table
-                width={600} height={500}
-                rowCount={events.length}
-                rowGetter={this.rowGetter}
-                rowHeight={50}
-                headerHeight={100}
-                overscanRowCount={0}
+            <InfiniteLoader
+                isRowLoaded={this.isRowLoaded}
+                loadMoreRows={this.loadMoreRows}
+                rowCount={eventsCount}
+                minimumBatchSize={PageSize}
             >
-                <Column dataKey="title" label="Event Name" width={400}/>
-                <Column dataKey="when" label="Month" width={300}/>
-                <Column dataKey="where" label="Place" width={300}/>
-            </Table>
+                {({onRowsRendered, registerChild}) => (
+                        <Table
+                            ref={registerChild}
+                            width={600} height={500}
+                            rowCount={eventsCount}
+                            rowHeight={50}
+                            headerHeight={100}
+                            overscanRowCount={3}
+                            onRowsRendered={onRowsRendered}
+                            rowGetter={this.rowGetter}
+                            onRowClick={this.onRowClick}
+                        >
+                            <Column dataKey="title" label="Event Name" width={400}/>
+                            <Column dataKey="when" label="Month" width={300}/>
+                            <Column dataKey="where" label="Place" width={300}/>
+                        </Table>
+                )}
+
+            </InfiniteLoader>
         )
     }
 
-    rowGetter = ({ index }) => this.props.events[index]
+    rowGetter = ({ index }) => {
+        const row = this.props.events[index]
+        return row ? row : {}
+    }
+    isRowLoaded = ({index}) => !!this.props.events[index]
+    loadMoreRows = ({startIndex}) => {
+        const row = this.rowGetter({index: startIndex - 1})
+        this.props.fetchRows(row.uid)
+
+        //Костыль :) Был ещё вариант с redux-saga-thunk
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, 500);
+        });
+    }
+    onRowClick = ({rowData}) => this.props.selectEvent(rowData.uid)
 }
 
 export default connect((state) => ({
     events: eventListSelector(state),
     loading: loadingSelector(state),
-    loaded: loadedSelector(state)
-}), { fetchAllEvents, selectEvent })(EventsTableVirtualized)
+    eventsCount: eventsCountSelector(state)
+}), {selectEvent, fetchRows})(EventsTableVirtualized)
