@@ -36,6 +36,7 @@ export class EventsTableVirtualized extends Component {
                             overscanRowCount={3}
                             onRowsRendered={onRowsRendered}
                             rowGetter={this.rowGetter}
+                            onRowClick={this.onRowClick}
                         >
                             <Column dataKey="title" label="Event Name" width={400}/>
                             <Column dataKey="when" label="Month" width={300}/>
@@ -59,10 +60,11 @@ export class EventsTableVirtualized extends Component {
         //Костыль :) Был ещё вариант с redux-saga-thunk
         return new Promise(resolve => {
             setTimeout(() => {
-                resolve(this.props.events);
+                resolve();
             }, 500);
         });
     }
+    onRowClick = ({rowData}) => this.props.selectEvent(rowData.uid)
 }
 
 export default connect((state) => ({

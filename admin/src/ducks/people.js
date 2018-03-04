@@ -1,11 +1,10 @@
 import {appName} from '../config'
-import {Record, List} from 'immutable'
+import {Record, OrderedMap} from 'immutable'
 import {reset} from 'redux-form'
 import {createSelector} from 'reselect'
-import {takeEvery, put, call} from 'redux-saga/effects'
+import {takeEvery, put, call, all, takeLatest} from 'redux-saga/effects'
 import {fbToEntities} from './utils'
 import firebase from 'firebase'
-import {EventRecord} from "./events";
 
 /**
  * Constants
@@ -16,13 +15,14 @@ export const ADD_PERSON_REQUEST = `${prefix}/ADD_PERSON_REQUEST`
 export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
 export const LOAD_PERSONS_REQUEST = `${prefix}/LOAD_PERSONS_REQUEST`
+export const LOAD_PERSONS_START = `${prefix}/LOAD_PERSONS_START`
 export const LOAD_PERSONS_SUCCESS = `${prefix}/LOAD_PERSONS_SUCCESS`
 
 /**
  * Reducer
  * */
 const ReducerState = Record({
-    entities: new List([]),
+    entities: new OrderedMap({}),
     loading: true,
     loaded: false
 })
@@ -39,7 +39,7 @@ export default function reducer(state = new ReducerState(), action) {
 
     switch (type) {
         case ADD_PERSON_SUCCESS:
-            return state.update('entities', entities => entities.push(payload))
+            return state.update('entities', entities => entities.set(payload.uid, payload))
 
         case LOAD_PERSONS_SUCCESS:
             return state
@@ -56,7 +56,7 @@ export default function reducer(state = new ReducerState(), action) {
  * */
 
 export const stateSelector = state => state[moduleName]
-export const peopleSelector = createSelector(stateSelector, state => state.entities.toArray())
+export const peopleSelector = createSelector(stateSelector, state => state.entities.valueSeq().toArray())
 
 /**
  * Action Creators
@@ -96,19 +96,36 @@ export function addPerson(person) {
 
 export const addPersonSaga = function * (action) {
     const ref = firebase.database().ref('/people')
-    console.log('---payload', action.payload)
     const user = yield call([ref, ref.push], action.payload)
-    console.log('---id', user)
 
     yield put({
         type: ADD_PERSON_SUCCESS,
-        payload: {uid: user.key(), }
+        payload: {uid: user.key, ...action.payload}
     })
 
     yield put(reset('person'))
 
 }
 
+
+export function* fetchAllSaga() {
+    const ref = firebase.database().ref('/people')
+
+    yield put({
+        type: LOAD_PERSONS_START
+    })
+
+    const snapshot = yield call([ref, ref.once], 'value')
+
+    yield put({
+        type: LOAD_PERSONS_SUCCESS,
+        payload: snapshot.val()
+    })
+}
+
 export const saga = function * () {
-    yield takeEvery(ADD_PERSON_REQUEST, addPersonSaga)
+    yield all([
+        takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
+        takeLatest(LOAD_PERSONS_REQUEST, fetchAllSaga)
+    ])
 }

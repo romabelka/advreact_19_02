@@ -7,10 +7,6 @@ class EventsPage extends Component {
 
     };
 
-    componentDidMount(){
-
-    }
-
     render() {
         return (
             <div>
