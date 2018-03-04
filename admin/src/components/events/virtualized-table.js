@@ -31,9 +31,10 @@ export class EventsTableVirtualized extends Component {
                         rowGetter={this.rowGetter}
                         rowHeight={50}
                         headerHeight={100}
+                        rowClassName="test__virtualized-table--item"
                         overscanRowCount={0}
                         onRowsRendered={onRowsRendered}
-                        onRowClick = {this.onRowClick}
+                        onRowClick = {this.handleRowClick}
                     >
                         <Column dataKey="title" label="Event Name" width={400}/>
                         <Column dataKey="when" label="Month" width={300}/>
@@ -47,11 +48,11 @@ export class EventsTableVirtualized extends Component {
 
     isRowLoaded = ({ index }) => !!this.props.events[index]
 
-    loadMoreRows = ({startIndex, stopIndex}) => {
-        this.props.fetchSomeEvents(startIndex, stopIndex)
+    loadMoreRows = (/*{startIndex, stopIndex}*/) => {
+        this.props.fetchSomeEvents(/*startIndex, stopIndex*/)
     }
 
-    onRowClick = ({ rowData: { uid } }) => this.props.selectEvent(uid)
+    handleRowClick = ({ rowData: { uid } }) => this.props.selectEvent(uid)
 
 }
 
