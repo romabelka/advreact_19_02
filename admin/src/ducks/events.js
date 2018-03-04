@@ -1,6 +1,6 @@
 import {all, takeEvery, put, call, take} from 'redux-saga/effects'
 import {appName} from '../config'
-import {Record, List, OrderedSet} from 'immutable'
+import {Record, OrderedSet, OrderedMap} from 'immutable'
 import firebase from 'firebase'
 import {createSelector} from 'reselect'
 import {fbToEntities} from './utils'
@@ -32,7 +32,7 @@ export const ReducerRecord = Record({
     loading: false,
     loaded: false,
     selected: new OrderedSet(),
-    entities: new List([]),
+    entities: new OrderedMap({}),
     eventsCount: PageSize
 })
 
@@ -54,14 +54,7 @@ export default function reducer(state = new ReducerRecord(), action) {
             return state
                 .set('loading', false)
                 .set('loaded', true)
-                .update('entities', entities => entities.concat(fbToEntities(payload, EventRecord)))
-
-
-        case FETCH_ALL_SUCCESS:
-            return state
-                .set('loading', false)
-                .set('loaded', true)
-                .set('entities', fbToEntities(payload, EventRecord))
+                .update('entities', entities => entities.merge(fbToEntities(payload, EventRecord)))
 
         case SELECT_EVENT:
             return state.update('selected', selected => selected.has(payload.uid)
@@ -87,7 +80,8 @@ export const selectedEventsIds = createSelector(stateSelector, state => state.se
 export const loadingSelector = createSelector(stateSelector, state => state.loading)
 export const loadedSelector = createSelector(stateSelector, state => state.loaded)
 export const eventListSelector = createSelector(entitiesSelector, entities => entities.valueSeq().toArray())
-export const selectedEventsList = createSelector(entitiesSelector, selectedEventsIds,
+export const selectedEventsList = createSelector(
+    entitiesSelector, selectedEventsIds,
     (entities, ids) => ids.map(id => entities.get(id))
 )
 export const eventsCountSelector = createSelector(stateSelector, state => state.eventsCount)
@@ -138,9 +132,6 @@ export function* fetchAllSaga() {
 export function* fetchLimitedSaga(action) {
     let query = firebase.database().ref('events').orderByKey().limitToFirst(PageSize);
     if(action.payload.key){
-        console.log('---key', action.payload.key)
-        firebase.database().ref('events').orderByKey().limitToFirst(PageSize).startAt(action.payload.key).once('value')
-            .then(dataSnapshot => console.log('---test', dataSnapshot.val()));
         query = query.startAt(action.payload.key)
     }
 
