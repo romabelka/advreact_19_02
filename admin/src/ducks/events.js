@@ -11,10 +11,6 @@ import {fbToEntities} from './utils'
 export const moduleName = 'events'
 const prefix = `${appName}/${moduleName}`
 
-export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
-export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
-export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
-
 export const FETCH_LIMITED_REQUEST = `${prefix}/FETCH_LIMITED_REQUEST`
 export const FETCH_LIMITED_START = `${prefix}/FETCH_LIMITED_START`
 export const FETCH_LIMITED_SUCCESS = `${prefix}/FETCH_LIMITED_SUCCESS`
@@ -89,13 +85,6 @@ export const eventsCountSelector = createSelector(stateSelector, state => state.
 /**
  * Action Creators
  * */
-
-export function fetchAllEvents() {
-    return {
-        type: FETCH_ALL_REQUEST
-    }
-}
-
 export function selectEvent(uid) {
     return {
         type: SELECT_EVENT,
@@ -113,21 +102,6 @@ export function fetchRows(key) {
 /**
  * Sagas
  * */
-
-export function* fetchAllSaga() {
-    const ref = firebase.database().ref('events')
-
-    yield put({
-        type: FETCH_ALL_START
-    })
-
-    const snapshot = yield call([ref, ref.once], 'value')
-
-    yield put({
-        type: FETCH_ALL_SUCCESS,
-        payload: snapshot.val()
-    })
-}
 
 export function* fetchLimitedSaga(action) {
     let query = firebase.database().ref('events').orderByKey().limitToFirst(PageSize);
@@ -169,8 +143,6 @@ export function* fetchEventsCountSaga() {
 
 export function* saga() {
     yield all([
-        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
-        //throttle(5000, FETCH_LIMITED_REQUEST, fetchEventsCountSaga),
         fetchEventsCountSaga(),
         takeEvery(FETCH_LIMITED_REQUEST, fetchLimitedSaga)
     ])

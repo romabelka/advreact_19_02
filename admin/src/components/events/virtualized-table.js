@@ -1,9 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Table, Column, InfiniteLoader} from 'react-virtualized'
-import {
-    fetchAllEvents, selectEvent, eventListSelector, loadedSelector, loadingSelector, eventsCountSelector, fetchRows,
-    PageSize
+import {selectEvent, eventListSelector, loadingSelector, eventsCountSelector, fetchRows, PageSize
 } from '../../ducks/events'
 import Loader from '../common/Loader'
 import 'react-virtualized/styles.css'
@@ -70,6 +68,5 @@ export class EventsTableVirtualized extends Component {
 export default connect((state) => ({
     events: eventListSelector(state),
     loading: loadingSelector(state),
-    loaded: loadedSelector(state),
     eventsCount: eventsCountSelector(state)
-}), {fetchAllEvents, selectEvent, fetchRows})(EventsTableVirtualized)
+}), {selectEvent, fetchRows})(EventsTableVirtualized)
