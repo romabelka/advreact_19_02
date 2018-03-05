@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
+import { DropTarget } from 'react-dnd'
 
 const basicStyles = {
     width: 400,
     height: 100,
-    border: '1px solid black'
 }
 
 class EventCard extends Component {
@@ -12,9 +12,19 @@ class EventCard extends Component {
     };
 
     render() {
-        const { event } = this.props
-        return (
-            <div style={basicStyles}>
+        const { event, connectDropTarget, canReceive, isHovered } = this.props
+
+        const dndStyles = {
+            border: `1px solid ${canReceive 
+                ? isHovered 
+                    ? 'green'
+                    : 'red'
+                : 'black'
+            }`
+        }
+
+        return connectDropTarget(
+            <div style={{...basicStyles, ...dndStyles}}>
                 <h2>{event.title}</h2>
                 <h4>{event.where}</h4>
             </div>
@@ -22,4 +32,17 @@ class EventCard extends Component {
     }
 }
 
-export default EventCard
+const spec = {
+    drop(props, monitor) {
+        const personItem = monitor.getItem()
+        console.log('---', 'event: ', props.event.uid, 'person: ', personItem.id)
+    },
+}
+
+const collect = (connect, monitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    canReceive: monitor.canDrop(),
+    isHovered: monitor.isOver()
+})
+
+export default DropTarget(['person'], spec, collect)(EventCard)
