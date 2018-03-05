@@ -26,13 +26,14 @@ export class EventsTableVirtualized extends Component {
     }
 
 
-    isRowLoaded = ({index}) => {
+    _isRowLoaded = ({index}) => {
         return !!this.props.events[index]
     }
 
-    loadMoreRows = ({ startIndex, stopIndex }) => {
-        const count = stopIndex -  this.props.events.length + 1
-        if (count > 0 ) {
+    _loadMoreRows = ({ startIndex, stopIndex }) => {
+        const existRows =  this.props.events ? this.props.events.length : 0
+        const count = stopIndex - existRows  + 1
+        if (count>0) {
             //console.log('--> ' + this.props.events.length)
             this.props.fetchNextEvents(count)
             return new Promise((resolve) => this.onLoadRowsDataSucessPromises.push({resolve}))
@@ -41,14 +42,18 @@ export class EventsTableVirtualized extends Component {
             return Promise.resolve()
     }
 
+    _handleRowClick = ({rowData}) => {
+        this.props.selectEvent(rowData.uid)
+    }
+
 
     render() {
         const {loading, events} = this.props
         return (
             <div>
                 <InfiniteLoader
-                    isRowLoaded={this.isRowLoaded}
-                    loadMoreRows={this.loadMoreRows}
+                    isRowLoaded={this._isRowLoaded}
+                    loadMoreRows={this._loadMoreRows}
                     rowCount={9999}
                 >
                     {({ onRowsRendered, registerChild }) => (
@@ -61,6 +66,7 @@ export class EventsTableVirtualized extends Component {
                             rowHeight={50}
                             headerHeight={100}
                             overscanRowCount={0}
+                            onRowClick={this._handleRowClick}
                         >
                             <Column dataKey="title" label="Event Name" width={400}/>
                             <Column dataKey="when" label="Month" width={300}/>

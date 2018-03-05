@@ -124,11 +124,12 @@ export function* fetchNextSaga() {
     })
 
     const action = yield take(FETCH_NEXT_REQUEST)
-    const {countToFetch} = action.payload
+    const {countToFetch} = action.payload || 10;
 
     const events =  yield select(entitiesSelector)
 
-    const id = events && events.size ? events.last().get('uid') : ''
+    const id = (events && events.size) ? events.last().get('uid') : ''
+
     let query = ref.orderByKey().limitToFirst(countToFetch).startAt(id)
 
     const snapshot = yield call([query, query.once], 'value')
