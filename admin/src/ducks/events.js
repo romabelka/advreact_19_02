@@ -117,18 +117,21 @@ export function selectEvent(uid) {
  * */
 
 export function* fetchNextSaga() {
+    console.log('Start ref...')
     const ref = firebase.database().ref('events')
+    console.log('Done ref...')
 
     yield put({
         type: FETCH_NEXT_START
     })
 
     const action = yield take(FETCH_NEXT_REQUEST)
-    const {countToFetch} = action.payload || 10;
+    const countToFetch = action.payload.countToFetch || 10;
 
     const events =  yield select(entitiesSelector)
 
     const id = (events && events.size) ? events.last().get('uid') : ''
+
 
     let query = ref.orderByKey().limitToFirst(countToFetch).startAt(id)
 

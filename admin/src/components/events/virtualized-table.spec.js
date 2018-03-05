@@ -13,35 +13,17 @@ describe('EventsTableVirtualized Component', () => {
         expect(wrapper.contains(<Loader />)).toBe(true)
     });
 
-    it('should ask for new events if necessary', (done) => {
-        const dummy = () => done();
-        shallow(<EventsTableVirtualized events={[]}  fetchNextEvents={dummy}/>, { disableLifecycleMethods: true })
 
+    it('should ask for new events', (done) => {
+        const dummy = () => done();
+        shallow(<EventsTableVirtualized fetchNextEvents={dummy}/>)
     });
 
     it('should render events', () => {
-        const wrapper = shallow(<EventsTableVirtualized events = {events} loading={false} />, { disableLifecycleMethods: true })
 
-        expect(wrapper.find('.ReactVirtualized__Table__row').length).toBe(events.length)
+        const fetchNextEvents = (count) => events.slice(0, count)
+        const wrapper = shallow(<EventsTableVirtualized events={events} fetchNextEvents={fetchNextEvents} loading={false} />)
+        expect(wrapper.find('.ReactVirtualized__Table__rowColumn').length).toBeGreaterThan(0)
 
     });
-    /*
-    it('should fetch all events', (done) => {
-        const fetchEvents = () => done()
-        shallow(<EventsTable events = {[]} fetchAllEvents = {fetchEvents}/>)
-    });
-
-    it('should select an event', () => {
-        let selected = null
-        const selectEvent = uid => selected = uid
-
-        const wrapper = shallow(
-            <EventsTable events = {events} selectEvent = {selectEvent}/>,
-            { disableLifecycleMethods: true }
-        )
-
-        wrapper.find('.test__events-table--item').first().simulate('click')
-
-        expect(selected).toBe(events[0].uid)
-    });*/
 });

@@ -13,7 +13,7 @@ export class EventsTableVirtualized extends Component {
     onLoadRowsDataSucessPromises = []
 
     componentDidMount() {
-        this.props.fetchNextEvents(10)
+        this.props.fetchNextEvents()
     }
 
     componentWillUpdate(nextProps, nextState)
@@ -34,7 +34,6 @@ export class EventsTableVirtualized extends Component {
         const existRows =  this.props.events ? this.props.events.length : 0
         const count = stopIndex - existRows  + 1
         if (count>0) {
-            //console.log('--> ' + this.props.events.length)
             this.props.fetchNextEvents(count)
             return new Promise((resolve) => this.onLoadRowsDataSucessPromises.push({resolve}))
         }
