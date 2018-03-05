@@ -1,7 +1,7 @@
 import React from 'react'
 import {shallow} from 'enzyme'
 import {EventsTable} from './events-table'
-import Loader from '../common/Loader'
+import Loader from '../common/loader'
 import mockEvents from '../../mocks/conferences'
 
 const events = mockEvents.map(event => ({...event, uid: Math.random().toString()}))
