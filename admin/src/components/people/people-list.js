@@ -1,35 +1,36 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { List } from 'react-virtualized'
-import { peopleSelector } from '../../ducks/people'
+import {connect} from 'react-redux'
+import {peopleListSelector, fetchAllPeople} from '../../ducks/people'
+import {List} from 'react-virtualized'
+import 'react-virtualized/styles.css'
 
 class PeopleList extends Component {
-    static propTypes = {};
+    componentDidMount() {
+        this.props.fetchAllPeople()
+    }
 
     render() {
         return <List
-            width={600}
-            height={400}
-            rowCount={this.props.people.length}
-            rowHeight={200}
-            overscanRowCount={2}
             rowRenderer={this.rowRenderer}
+            rowCount={this.props.people.length}
+            rowHeight={100}
+            height={400}
+            width={400}
         />
+
     }
 
-    rowRenderer = ({index, style}) => {
+    rowRenderer = ({ style, index, key }) => {
         const person = this.props.people[index]
-
         return (
-            <div style = {style}>
-                <h2>{person.email}</h2>
-                <h4>{person.firstName} {person.lastName}</h4>
+            <div style={style} key={key}>
+                <h1>{person.firstName} <b>{person.lastName}</b></h1>
+                <h3>{person.email}</h3>
             </div>
         )
-
     }
 }
 
-export default connect(state => ({
-    people: peopleSelector(state)
-}))(PeopleList)
+export default connect((state) => ({
+    people: peopleListSelector(state)
+}), { fetchAllPeople })(PeopleList)
