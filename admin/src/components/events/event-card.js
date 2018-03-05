@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { DropTarget } from 'react-dnd'
+import { connect } from 'react-redux'
+import { addEventToPerson } from '../../ducks/people'
 
 const basicStyles = {
     width: 400,
@@ -35,7 +37,10 @@ class EventCard extends Component {
 const spec = {
     drop(props, monitor) {
         const personItem = monitor.getItem()
+/*
         console.log('---', 'event: ', props.event.uid, 'person: ', personItem.id)
+*/
+        props.addEventToPerson(props.event.uid, personItem.id)
     },
 }
 
@@ -45,4 +50,4 @@ const collect = (connect, monitor) => ({
     isHovered: monitor.isOver()
 })
 
-export default DropTarget(['person'], spec, collect)(EventCard)
+export default connect(null, { addEventToPerson })(DropTarget(['person'], spec, collect)(EventCard))

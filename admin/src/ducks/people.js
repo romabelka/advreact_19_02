@@ -18,6 +18,8 @@ export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
+export const ADD_EVENT = `${prefix}/ADD_EVENT`
+
 /**
  * Reducer
  * */
@@ -29,7 +31,8 @@ const PersonRecord = Record({
     uid: null,
     firstName: null,
     lastName: null,
-    email: null
+    email: null,
+    events: []
 })
 
 export default function reducer(state = new ReducerState(), action) {
@@ -70,6 +73,13 @@ export function addPerson(person) {
 export function fetchAllPeople() {
     return {
         type: FETCH_ALL_REQUEST
+    }
+}
+
+export function addEventToPerson(eventUid, personUid) {
+    return {
+        type: ADD_EVENT,
+        payload: { eventUid, personUid }
     }
 }
 
