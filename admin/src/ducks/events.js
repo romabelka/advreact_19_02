@@ -1,6 +1,6 @@
-import {all, takeEvery, put, call} from 'redux-saga/effects'
+import {all, takeEvery, put, call, take, select} from 'redux-saga/effects'
 import {appName} from '../config'
-import {Record, List, OrderedSet} from 'immutable'
+import {Record, OrderedMap, OrderedSet} from 'immutable'
 import firebase from 'firebase'
 import {createSelector} from 'reselect'
 import {fbToEntities} from './utils'
@@ -15,6 +15,10 @@ export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_START = `${prefix}/FETCH_ALL_START`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
+export const FETCH_NEXT_REQUEST = `${prefix}/FETCH_NEXT_REQUEST`
+export const FETCH_NEXT_START = `${prefix}/FETCH_NEXT_START`
+export const FETCH_NEXT_SUCCESS = `${prefix}/FETCH_NEXT_SUCCESS`
+
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
 /**
@@ -24,7 +28,7 @@ export const ReducerRecord = Record({
     loading: false,
     loaded: false,
     selected: new OrderedSet(),
-    entities: new List([])
+    entities: new OrderedMap([])
 })
 
 export const EventRecord = Record({
@@ -42,6 +46,7 @@ export default function reducer(state = new ReducerRecord(), action) {
 
     switch (type) {
         case FETCH_ALL_START:
+        case FETCH_NEXT_START:
             return state.set('loading', true)
 
         case FETCH_ALL_SUCCESS:
@@ -49,6 +54,12 @@ export default function reducer(state = new ReducerRecord(), action) {
                 .set('loading', false)
                 .set('loaded', true)
                 .set('entities', fbToEntities(payload, EventRecord))
+
+        case  FETCH_NEXT_SUCCESS:
+             return  state
+                 .set('loading', false)
+                 .update('entities', entities => entities.merge(fbToEntities(payload, EventRecord)))
+
 
         case SELECT_EVENT:
             return state.update('selected', selected => selected.has(payload.uid)
@@ -85,6 +96,13 @@ export function fetchAllEvents() {
     }
 }
 
+export function fetchNextEvents(countToFetch) {
+    return {
+        type: FETCH_NEXT_REQUEST,
+        payload: {countToFetch}
+    }
+}
+
 export function selectEvent(uid) {
     return {
         type: SELECT_EVENT,
@@ -92,9 +110,34 @@ export function selectEvent(uid) {
     }
 }
 
+
+
 /**
  * Sagas
  * */
+
+export function* fetchNextSaga() {
+    const ref = firebase.database().ref('events')
+
+    yield put({
+        type: FETCH_NEXT_START
+    })
+
+    const action = yield take(FETCH_NEXT_REQUEST)
+    const {countToFetch} = action.payload
+
+    const events =  yield select(entitiesSelector)
+
+    const id = events && events.size ? events.last().get('uid') : ''
+    let query = ref.orderByKey().limitToFirst(countToFetch).startAt(id)
+
+    const snapshot = yield call([query, query.once], 'value')
+
+    yield put({
+        type: FETCH_NEXT_SUCCESS,
+        payload: snapshot.val()
+    })
+}
 
 export function* fetchAllSaga() {
     const ref = firebase.database().ref('events')
@@ -113,6 +156,7 @@ export function* fetchAllSaga() {
 
 export function * saga() {
     yield all([
-        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga)
+        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+        takeEvery(FETCH_NEXT_REQUEST, fetchNextSaga)
     ])
 }
