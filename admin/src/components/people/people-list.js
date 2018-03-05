@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {peopleListSelector, fetchAllPeople} from '../../ducks/people'
 import {List} from 'react-virtualized'
+import PersonCard from './person-card'
+
 import 'react-virtualized/styles.css'
 
 class PeopleList extends Component {
@@ -24,8 +26,7 @@ class PeopleList extends Component {
         const person = this.props.people[index]
         return (
             <div style={style} key={key}>
-                <h1>{person.firstName} <b>{person.lastName}</b></h1>
-                <h3>{person.email}</h3>
+                <PersonCard person = {person}/>
             </div>
         )
     }

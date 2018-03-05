@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {selectedEventsList} from '../../ducks/events'
+import EventCard from './event-card'
 
 class SelectedEvents extends Component {
     static propTypes = {
@@ -8,11 +9,11 @@ class SelectedEvents extends Component {
     };
 
     render() {
-        const items = this.props.selected.map(event => <li key={event.uid}>{event.title}</li>)
+        const items = this.props.selected.map(event => <EventCard event = {event} key = {event.uid}/>)
         return (
-            <ul>
+            <div>
                 {items}
-            </ul>
+            </div>
         )
     }
 }
