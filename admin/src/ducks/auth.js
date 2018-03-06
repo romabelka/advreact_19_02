@@ -1,7 +1,9 @@
+import {all, takeEvery, take, put, apply, call} from 'redux-saga/effects'
 import {appName} from '../config'
-import {all, take, takeEvery, put, call, apply} from 'redux-saga/effects'
+import {createSelector} from 'reselect'
 import {Record} from 'immutable'
 import firebase from 'firebase'
+import {replace} from 'react-router-redux'
 
 /**
  * Constants
@@ -23,16 +25,33 @@ export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
  * Reducer
  * */
 export const ReducerRecord = Record({
-    user: null
+    user: null,
+    loading: false,
+    error: null
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
     const {type, payload} = action
 
     switch (type) {
-        case SIGN_UP_SUCCESS:
+        case SIGN_IN_START:
+        case SIGN_UP_START:
+            return state
+                .set('error', null)
+                .set('loading', true)
+
         case SIGN_IN_SUCCESS:
-            return state.set('user', payload)
+        case SIGN_UP_SUCCESS:
+            return state
+                .set('loading', false)
+                .set('user', payload.user)
+
+        case SIGN_IN_ERROR:
+        case SIGN_UP_ERROR:
+            return state
+                .set('loading', false)
+                .set('error', payload.error.message)
+
         default:
             return state
     }
@@ -41,7 +60,11 @@ export default function reducer(state = new ReducerRecord(), action) {
 /**
  * Selectors
  * */
-export const userSelector = state => state[moduleName].user
+
+export const stateSelector = state => state[moduleName]
+export const userSelector = createSelector(stateSelector, state => state.user)
+export const errorSelector = createSelector(stateSelector, state => state.error)
+export const loadingSelector = createSelector(stateSelector, state => state.loading)
 
 /**
  * Action Creators
@@ -64,67 +87,66 @@ export function signUp(email, password) {
 firebase.auth().onAuthStateChanged(user => {
     if (user) window.store.dispatch({
         type: SIGN_IN_SUCCESS,
-        payload: user
+        payload: { user }
     })
 })
 
 /**
  * Sagas
- **/
+ */
 
-export const signInSaga = function * () {
+export const signUpSaga = function * () {
     while (true) {
-        const {payload} = yield take(SIGN_IN_REQUEST)
+        const action = yield take(SIGN_UP_REQUEST)
+        const {email, password} = action.payload
 
         yield put({
-            type: SIGN_IN_START,
-            payload
+            type: SIGN_UP_START
         })
 
-        const auth = firebase.auth()
-
         try {
-            const user = yield call([auth, auth.signInWithEmailAndPassword], payload.email, payload.password)
-
-            yield put({
-                type: SIGN_IN_SUCCESS,
-                payload: user
-            })
+            const auth = firebase.auth()
+            yield call([auth, auth.createUserWithEmailAndPassword], email, password)
         } catch (error) {
             yield put({
-                type: SIGN_IN_ERROR,
-                error
+                type: SIGN_UP_ERROR,
+                payload: {error}
             })
         }
     }
 }
 
-export const signUpSaga = function * ({ payload }) {
+export const signInSaga = function * (action) {
+    const { email, password } = action.payload
+
     yield put({
-        type: SIGN_UP_START,
-        payload
+        type: SIGN_IN_START
     })
 
-    const auth = firebase.auth()
-
     try {
-        const user = yield apply(auth, auth.createUserWithEmailAndPassword, [payload.email, payload.password])
-
-        yield put({
-            type: SIGN_UP_SUCCESS,
-            payload: user
-        })
+        const auth = firebase.auth()
+        yield apply(auth, auth.signInWithEmailAndPassword, [email, password])
     } catch (error) {
         yield put({
-            type: SIGN_UP_ERROR,
-            error
+            type: SIGN_IN_ERROR,
+            payload: { error }
         })
     }
 }
 
+export function * watchStatusChangeSaga() {
+    while (true) {
+        yield take(SIGN_IN_SUCCESS)
+
+        yield (put(replace('/admin')))
+    }
+}
+
+
 export const saga = function * () {
     yield all([
-        signInSaga(),
-        takeEvery(SIGN_UP_REQUEST, signUpSaga)
+        takeEvery(SIGN_IN_REQUEST, signInSaga),
+        signUpSaga(),
+        watchStatusChangeSaga()
     ])
 }

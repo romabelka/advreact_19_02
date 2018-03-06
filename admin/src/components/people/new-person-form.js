@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {reduxForm, Field} from 'redux-form'
 import validateEmail from 'email-validator'
-import ErrorField from '../common/ErrorField'
+import ErrorField from '../common/error-field'
 
 class NewPersonForm extends Component {
     static propTypes = {
