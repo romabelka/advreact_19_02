@@ -44,4 +44,4 @@ const collect = (connect, monitor) => ({
     dragItem: monitor.getItem()
 })
 
-export default connect(null, { removePerson, removeEvent })(DropTarget(['person'], spec, collect)(RecycleBinDropTarget))
+export default connect(null, { removePerson, removeEvent })(DropTarget(['person', 'event'], spec, collect)(RecycleBinDropTarget))
