@@ -19,9 +19,7 @@ class AdminRoute extends Component {
                 <LazyEvents/>
                 </div>
                 <div style={{ float: 'left' }}>
-                    <div style={{ position: 'fixed' }}>
-                        <RecycleBin/>
-                    </div>
+                    <RecycleBin/>
                 </div>
             </div>
         )
