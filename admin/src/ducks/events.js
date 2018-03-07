@@ -70,6 +70,9 @@ export default function reducer(state = new ReducerRecord(), action) {
                 : selected.add(payload.uid)
             )
 
+        case REMOVE_EVENT_SUCCESS:
+            return state.update('entities', entities => entities.delete(payload.eventUid))
+
         default:
             return state
     }
@@ -169,9 +172,22 @@ export const fetchLazySaga = function * () {
     }
 }
 
+export function* removeEventSaga(action) {
+    const eventUid = action.payload.eventUid
+    const ref = firebase.database().ref('events').child(eventUid)
+
+    yield call([ref, ref.remove])
+
+    yield put({
+        type: REMOVE_EVENT_SUCCESS,
+        payload: {eventUid}
+    })
+}
+
 export function* saga() {
     yield all([
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
-        fetchLazySaga()
+        fetchLazySaga(),
+        takeEvery(REMOVE_EVENT_REQUEST, removeEventSaga)
     ])
 }

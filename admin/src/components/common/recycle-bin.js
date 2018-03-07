@@ -7,9 +7,6 @@ const red = {fill: "#B22222"}
 const lightRed = {fill: "#FF0000"}
 
 class RecycleBin extends Component {
-    static propTypes = {
-
-    };
 
     render() {
         const { isRed } = this.props
