@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DropTarget } from 'react-dnd'
+import { DropTarget, DragSource } from 'react-dnd'
 import { connect } from 'react-redux'
 import { addEventToPerson } from '../../ducks/people'
 
@@ -14,7 +14,7 @@ class EventCard extends Component {
     };
 
     render() {
-        const { event, connectDropTarget, canReceive, isHovered } = this.props
+        const { event, connectDropTarget, connectDragSource, canReceive, isHovered } = this.props
 
         const dndStyles = {
             border: `1px solid ${canReceive 
@@ -27,12 +27,25 @@ class EventCard extends Component {
 
         return connectDropTarget(
             <div style={{...basicStyles, ...dndStyles}}>
-                <h2>{event.title}</h2>
+				{connectDragSource(<h2>{event.title}</h2>)}
                 <h4>{event.where}</h4>
             </div>
         )
     }
 }
+
+const specSource = {
+	beginDrag(props) {
+		return {
+			id: props.event.uid
+		}
+	}
+}
+
+const collectSource = (connect, monitor) => ({
+	connectDragSource: connect.dragSource(),
+	isDragging: monitor.isDragging(),
+})
 
 const spec = {
     drop(props, monitor) {
@@ -50,4 +63,4 @@ const collect = (connect, monitor) => ({
     isHovered: monitor.isOver()
 })
 
-export default connect(null, { addEventToPerson })(DropTarget(['person'], spec, collect)(EventCard))
+export default connect(null, { addEventToPerson })(DragSource('event', specSource, collectSource)(DropTarget(['person'], spec, collect)(EventCard)))
