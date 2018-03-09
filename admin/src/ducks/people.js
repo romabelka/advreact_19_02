@@ -143,10 +143,20 @@ export function* removePersonSaga(action) {
     })
 }
 
+
+export function* addEventToPersonSaga(action) {
+    const personUid = action.payload.personUid
+    const eventUid = action.payload.eventUid
+    const ref = firebase.database().ref('people').child(`${personUid}/events`)
+
+    yield call([ref, ref.update], {[eventUid]: true})
+}
+
 export const saga = function * () {
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
-        takeEvery(REMOVE_PERSON_REQUEST, removePersonSaga)
+        takeEvery(REMOVE_PERSON_REQUEST, removePersonSaga),
+        takeEvery(ADD_EVENT, addEventToPersonSaga)
     ])
 }
