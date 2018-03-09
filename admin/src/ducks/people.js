@@ -48,6 +48,9 @@ export default function reducer(state = new ReducerState(), action) {
         case FETCH_ALL_SUCCESS:
             return state.set('entities', fbToEntities(payload, PersonRecord))
 
+        case REMOVE_PERSON_SUCCESS:
+            return state.update('entities', entites => entites.delete(payload.personUid))
+
         default:
             return state
     }
@@ -127,9 +130,23 @@ export function * fetchAllSaga() {
     })
 }
 
+
+export function* removePersonSaga(action) {
+    const personUid = action.payload.personUid
+    const ref = firebase.database().ref('people').child(personUid)
+
+    yield call([ref, ref.remove])
+
+    yield put({
+        type: REMOVE_PERSON_SUCCESS,
+        payload: {personUid}
+    })
+}
+
 export const saga = function * () {
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+        takeEvery(REMOVE_PERSON_REQUEST, removePersonSaga)
     ])
 }
