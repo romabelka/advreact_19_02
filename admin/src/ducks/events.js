@@ -19,6 +19,10 @@ export const FETCH_LAZY_REQUEST = `${prefix}/FETCH_LAZY_REQUEST`
 export const FETCH_LAZY_START = `${prefix}/FETCH_LAZY_START`
 export const FETCH_LAZY_SUCCESS = `${prefix}/FETCH_LAZY_SUCCESS`
 
+export const REMOVE_EVENT = `${prefix}/REMOVE_EVENT`
+export const REMOVE_EVENT_START = `${prefix}/REMOVE_EVENT_START`
+export const REMOVE_EVENT_SUCCESS = `${prefix}/REMOVE_EVENT_SUCCESS`
+
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
 /**
@@ -99,6 +103,13 @@ export function fetchAllEvents() {
 export function selectEvent(uid) {
     return {
         type: SELECT_EVENT,
+        payload: { uid }
+    }
+}
+
+export function removeEvent(uid) {
+    return {
+        type: REMOVE_EVENT,
         payload: { uid }
     }
 }

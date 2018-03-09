@@ -15,6 +15,10 @@ export const ADD_PERSON = `${prefix}/ADD_PERSON`
 export const ADD_PERSON_START = `${prefix}/ADD_PERSON_START`
 export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
+export const REMOVE_PERSON = `${prefix}/REMOVE_PERSON`
+export const REMOVE_PERSON_START = `${prefix}/REMOVE_PERSON_START`
+export const REMOVE_PERSON_SUCCESS = `${prefix}/REMOVE_PERSON_SUCCESS`
+
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
@@ -80,6 +84,13 @@ export function addEventToPerson(eventUid, personUid) {
     return {
         type: ADD_EVENT,
         payload: { eventUid, personUid }
+    }
+}
+
+export function removePerson(personUid) {
+    return {
+        type: REMOVE_PERSON,
+        payload: { personUid }
     }
 }
 
