@@ -5,6 +5,7 @@ import {
 } from '../../ducks/events'
 import {Table, Column, InfiniteLoader} from 'react-virtualized'
 import 'react-virtualized/styles.css'
+import EventDragSource from './event-drag-source'
 
 export class EventLazyTable extends Component {
     static propTypes = {
@@ -14,6 +15,8 @@ export class EventLazyTable extends Component {
     componentDidMount() {
         this.props.fetchLazy()
     }
+
+    rowRenderer = (props) => <EventDragSource {...props} />
 
     render() {
         const {loaded, events} = this.props
@@ -36,6 +39,7 @@ export class EventLazyTable extends Component {
                         onRowClick={this.handleRowClick}
                         onRowsRendered={onRowsRendered}
                         rowClassName="test__event_table_row"
+                        rowRenderer={this.rowRenderer}
                     >
                         <Column
                             label="title"

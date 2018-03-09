@@ -19,6 +19,9 @@ export const FETCH_LAZY_REQUEST = `${prefix}/FETCH_LAZY_REQUEST`
 export const FETCH_LAZY_START = `${prefix}/FETCH_LAZY_START`
 export const FETCH_LAZY_SUCCESS = `${prefix}/FETCH_LAZY_SUCCESS`
 
+export const REMOVE_EVENT_REQUEST = `${prefix}/REMOVE_EVENT_REQUEST`
+export const REMOVE_EVENT_SUCCESS = `${prefix}/REMOVE_EVENT_SUCCESS`
+
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
 /**
@@ -67,6 +70,9 @@ export default function reducer(state = new ReducerRecord(), action) {
                 : selected.add(payload.uid)
             )
 
+        case REMOVE_EVENT_SUCCESS:
+            return state.update('entities', entities => entities.delete(payload.eventUid))
+
         default:
             return state
     }
@@ -85,6 +91,8 @@ export const eventListSelector = createSelector(entitiesSelector, entities => en
 export const selectedEventsList = createSelector(entitiesSelector, selectedEventsIds,
     (entities, ids) => ids.map(id => entities.get(id))
 )
+export const idSelector = (_, props) => props.id
+export const eventSelector = createSelector(entitiesSelector, idSelector, (entities, id) => entities.get(id))
 
 /**
  * Action Creators
@@ -106,6 +114,13 @@ export function selectEvent(uid) {
 export function fetchLazy() {
     return {
         type: FETCH_LAZY_REQUEST
+    }
+}
+
+export function removeEvent(eventUid) {
+    return {
+        type: REMOVE_EVENT_REQUEST,
+        payload: { eventUid }
     }
 }
 
@@ -157,9 +172,22 @@ export const fetchLazySaga = function * () {
     }
 }
 
+export function* removeEventSaga(action) {
+    const eventUid = action.payload.eventUid
+    const ref = firebase.database().ref('events').child(eventUid)
+
+    yield call([ref, ref.remove])
+
+    yield put({
+        type: REMOVE_EVENT_SUCCESS,
+        payload: {eventUid}
+    })
+}
+
 export function* saga() {
     yield all([
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
-        fetchLazySaga()
+        fetchLazySaga(),
+        takeEvery(REMOVE_EVENT_REQUEST, removeEventSaga)
     ])
 }

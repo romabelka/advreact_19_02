@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import SelectedEvents from '../events/selected-events'
 import LazyEvents from '../events/virtualized-lazy-table'
 import PeopleList from '../people/people-list'
+import RecycleBinDropTarget from './../../components/common/recycle-bin-drop-target'
 
 class AdminRoute extends Component {
     static propTypes = {
@@ -15,6 +16,7 @@ class AdminRoute extends Component {
                 <PeopleList/>
                 <SelectedEvents/>
                 <LazyEvents/>
+                <RecycleBinDropTarget />
             </div>
         )
     }
