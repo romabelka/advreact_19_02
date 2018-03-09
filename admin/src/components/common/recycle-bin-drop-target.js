@@ -26,8 +26,6 @@ const spec = {
         const item = monitor.getItem()
         const type = monitor.getItemType()
 
-        console.log('---item dropped', item)
-        console.log('---item type', type)
         if(type === 'person'){
             props.removePerson(item.id)
         }
