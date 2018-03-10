@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { personSelector } from '../../ducks/people'
+import { eventSelector } from '../../ducks/events'
 
-class PersonDragPreview extends Component {
+class EventDragPreview extends Component {
     static propTypes = {
 
     };
@@ -10,12 +10,12 @@ class PersonDragPreview extends Component {
     render() {
         return (
             <div>
-                <h1>{this.props.person && this.props.person.email}</h1>
+                <h1>{this.props.event.title}</h1>
             </div>
         )
     }
 }
 
 export default connect((state, props) => ({
-    person: personSelector(state, props)
-}))(PersonDragPreview)
+    event: eventSelector(state, props)
+}))(EventDragPreview)
