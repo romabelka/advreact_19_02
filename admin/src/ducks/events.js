@@ -128,6 +128,7 @@ export function* fetchAllSaga() {
     })
 }
 
+
 export const fetchLazySaga = function * () {
     while (true) {
         yield take(FETCH_LAZY_REQUEST)
