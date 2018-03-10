@@ -20,6 +20,11 @@ export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
 export const ADD_EVENT = `${prefix}/ADD_EVENT`
 
+export const DELETE = `${prefix}/DELETE`
+export const DELETE_START = `${prefix}/DELETE_START`
+export const DELETE_SUCCESS = `${prefix}/DELETE_SUCCESS`
+export const DELETE_ERROR = `${prefix}/DELETE_ERROR`
+
 /**
  * Reducer
  * */
@@ -44,6 +49,9 @@ export default function reducer(state = new ReducerState(), action) {
 
         case FETCH_ALL_SUCCESS:
             return state.set('entities', fbToEntities(payload, PersonRecord))
+
+        case DELETE_SUCCESS:
+            return state.deleteIn(['entities', payload.id])
 
         default:
             return state
@@ -83,6 +91,14 @@ export function addEventToPerson(eventUid, personUid) {
     }
 }
 
+export function deletePerson(id) {
+	return {
+		type: DELETE,
+		payload: { id }
+	}
+}
+
+
 /**
  * Sagas
  */
@@ -106,6 +122,34 @@ export function * addPersonSaga(action) {
     yield put(reset('person'))
 }
 
+export function * deletePersonSaga(action) {
+
+	yield put({
+		type: DELETE_START,
+		payload: { ...action.payload }
+	})
+
+    try {
+
+	    const peopleRef = firebase.database().ref('people')
+	    const personRef = peopleRef.child(action.payload.id)
+	    yield call([personRef, personRef.remove])
+
+	    yield put({
+		    type: DELETE_SUCCESS,
+		    payload: {...action.payload}
+	    })
+
+    } catch(error) {
+
+	    yield put({
+		    type: DELETE_ERROR,
+		    payload: {...action.payload, error}
+	    })
+
+    }
+}
+
 export function * fetchAllSaga() {
     const peopleRef = firebase.database().ref('people')
 
@@ -120,6 +164,7 @@ export function * fetchAllSaga() {
 export const saga = function * () {
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
+	    takeEvery(DELETE, deletePersonSaga),
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
     ])
 }

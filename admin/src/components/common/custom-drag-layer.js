@@ -6,6 +6,7 @@ const basicStyles = {
     top: 0, bottom: 0,
     left: 0, right: 0,
     pointerEvents: 'none',
+    zIndex: 100
 }
 
 class CustomDragLayer extends Component {

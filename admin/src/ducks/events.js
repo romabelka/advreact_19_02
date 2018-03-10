@@ -21,6 +21,11 @@ export const FETCH_LAZY_SUCCESS = `${prefix}/FETCH_LAZY_SUCCESS`
 
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
+export const DELETE = `${prefix}/DELETE`
+export const DELETE_START = `${prefix}/DELETE_START`
+export const DELETE_SUCCESS = `${prefix}/DELETE_SUCCESS`
+export const DELETE_ERROR = `${prefix}/DELETE_ERROR`
+
 /**
  * Reducer
  * */
@@ -67,7 +72,10 @@ export default function reducer(state = new ReducerRecord(), action) {
                 : selected.add(payload.uid)
             )
 
-        default:
+	    case DELETE_SUCCESS:
+		    return state.deleteIn(['entities', payload.id])
+
+	    default:
             return state
     }
 }
@@ -85,6 +93,8 @@ export const eventListSelector = createSelector(entitiesSelector, entities => en
 export const selectedEventsList = createSelector(entitiesSelector, selectedEventsIds,
     (entities, ids) => ids.map(id => entities.get(id))
 )
+export const idSelector = (_, props) => props.id
+export const eventSelector = createSelector(entitiesSelector, idSelector, (entities, id) => entities.get(id))
 
 /**
  * Action Creators
@@ -107,6 +117,13 @@ export function fetchLazy() {
     return {
         type: FETCH_LAZY_REQUEST
     }
+}
+
+export function deleteEvent(id) {
+	return {
+		type: DELETE,
+		payload: { id }
+	}
 }
 
 /**
@@ -157,9 +174,38 @@ export const fetchLazySaga = function * () {
     }
 }
 
+export function * deleteEventSaga(action) {
+
+	yield put({
+		type: DELETE_START,
+		payload: { ...action.payload }
+	})
+
+	try {
+
+		const peopleRef = firebase.database().ref('events')
+		const personRef = peopleRef.child(action.payload.id)
+		yield call([personRef, personRef.remove])
+
+		yield put({
+			type: DELETE_SUCCESS,
+			payload: {...action.payload}
+		})
+
+	} catch(error) {
+
+		yield put({
+			type: DELETE_ERROR,
+			payload: {...action.payload, error}
+		})
+
+	}
+}
+
 export function* saga() {
     yield all([
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+	    takeEvery(DELETE, deleteEventSaga),
         fetchLazySaga()
     ])
 }
