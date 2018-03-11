@@ -5,6 +5,7 @@ import {
 } from '../../ducks/events'
 import {Table, Column, InfiniteLoader} from 'react-virtualized'
 import 'react-virtualized/styles.css'
+import DraggableTableRow from './DraggableTableRow'
 
 export class EventLazyTable extends Component {
     static propTypes = {
@@ -33,6 +34,7 @@ export class EventLazyTable extends Component {
                         overscanRowCount={1}
                         width={700}
                         height={300}
+                        rowRenderer={ this.rowRenderer }
                         onRowClick={this.handleRowClick}
                         onRowsRendered={onRowsRendered}
                         rowClassName="test__event_table_row"
@@ -72,6 +74,9 @@ export class EventLazyTable extends Component {
         const {selectEvent} = this.props
         selectEvent && selectEvent(rowData.uid)
     }
+
+    rowRenderer = props => <DraggableTableRow {...props} />
+
 }
 
 export default connect(state => ({

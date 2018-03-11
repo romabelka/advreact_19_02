@@ -21,6 +21,8 @@ export const FETCH_LAZY_SUCCESS = `${prefix}/FETCH_LAZY_SUCCESS`
 
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
 
+export const REMOVE_EVENT = `${prefix}/REMOVE_EVENT`
+
 /**
  * Reducer
  * */
@@ -67,6 +69,9 @@ export default function reducer(state = new ReducerRecord(), action) {
                 : selected.add(payload.uid)
             )
 
+        case REMOVE_EVENT:
+            return state.update('entities', entities => entities.delete(payload.uid))
+
         default:
             return state
     }
@@ -109,6 +114,12 @@ export function fetchLazy() {
     }
 }
 
+export function removeEvent(uid) {
+    return {
+        type: REMOVE_EVENT,
+        payload: { uid }
+    }
+}
 /**
  * Sagas
  * */

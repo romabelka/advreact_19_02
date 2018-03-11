@@ -50,4 +50,6 @@ const collect = (connect, monitor) => ({
     isHovered: monitor.isOver()
 })
 
-export default connect(null, { addEventToPerson })(DropTarget(['person'], spec, collect)(EventCard))
+export default connect(null, { addEventToPerson })(
+    DropTarget(['person'], spec, collect)(EventCard)
+)
