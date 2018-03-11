@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
-
+import { removeEvent } from '../../ducks/events'
+import { removePerson } from '../../ducks/people'
 
 class Bucket extends Component {
     render() {
@@ -34,9 +35,16 @@ class Bucket extends Component {
 
 const spec = {
     drop(props, monitor) {
+        const {
+            removeEvent,
+            removePerson
+        } = props;
+
         const item = monitor.getItem()
         const type = monitor.getItemType()
-        //console.log( 'item: ', item, 'type: ', type);
+
+        type === 'event' && removeEvent( item.uid )
+        type === 'person' && removePerson( item.id )
     }
 }
 
@@ -47,7 +55,7 @@ const collect = (connect, monitor) => ({
     dragItem: monitor.getItem()
 })
 
-export default connect(null, null)(DropTarget(
+export default connect(null, { removeEvent, removePerson })(DropTarget(
     ['person', 'event'],
     spec,
     collect

@@ -17,7 +17,7 @@ class DraggableTableRow extends Component{
 const spec = {
     beginDrag(props) {
         return {
-            id: props.rowData.uid
+            uid: props.rowData.uid
         }
     }
 }
