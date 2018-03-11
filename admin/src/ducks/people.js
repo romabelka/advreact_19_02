@@ -15,6 +15,12 @@ export const ADD_PERSON = `${prefix}/ADD_PERSON`
 export const ADD_PERSON_START = `${prefix}/ADD_PERSON_START`
 export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 
+
+export const DEL_PERSON_REQUEST = `${prefix}/DEL_PERSON_REQUEST`
+export const DEL_PERSON_START = `${prefix}/DEL_PERSON_START`
+export const DEL_PERSON_SUCCESS = `${prefix}/DEL_PERSON_SUCCESS`
+
+
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
@@ -50,6 +56,9 @@ export default function reducer(state = new ReducerState(), action) {
         case ADD_EVENT_SUCCESS:
             return state.setIn(['entities', payload.personUid, 'events', payload.eventUid], true)
 
+        case DEL_PERSON_SUCCESS:
+            return state.deleteIn(['entities', payload])
+
         default:
             return state
     }
@@ -75,6 +84,15 @@ export function addPerson(person) {
         payload: { person }
     }
 }
+
+export function delPerson(uid) {
+    return {
+        type: DEL_PERSON_REQUEST,
+        payload: { uid }
+    }
+}
+
+
 
 export function fetchAllPeople() {
     return {
@@ -112,6 +130,25 @@ export function * addPersonSaga(action) {
     yield put(reset('person'))
 }
 
+export function * delPersonSaga(action) {
+
+    yield put({
+        type: DEL_PERSON_START,
+        payload:  action.uid
+    })
+
+    const peopleRef = firebase.database().ref('people').child(action.payload.uid)
+
+    yield call([peopleRef, peopleRef.remove])
+
+    yield put({
+        type: DEL_PERSON_SUCCESS,
+        payload: action.payload.uid
+    })
+
+}
+
+
 export function * fetchAllSaga() {
     const peopleRef = firebase.database().ref('people')
 
@@ -148,6 +185,7 @@ export const saga = function * () {
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
-        takeEvery(ADD_EVENT, addEventSaga)
+        takeEvery(ADD_EVENT, addEventSaga),
+        takeEvery(DEL_PERSON_REQUEST, delPersonSaga)
     ])
 }

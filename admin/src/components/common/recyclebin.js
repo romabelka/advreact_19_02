@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { DropTarget} from 'react-dnd'
 import { connect } from 'react-redux'
-import {eventToBin, personToBin,
+import {eventToBin, personToBin, emptyBin,
         peopleListSelector as peopleInBinSelector,
         eventListSelector as eventsInBinSelector} from '../../ducks/recyclebin'
 import {peopleListSelector} from '../../ducks/people'
@@ -20,7 +20,7 @@ const basicStyles = {
 class RecycleBin extends Component {
 
     render() {
-        const { connectDropTarget, canReceive, isHovered, peopleInBin, peopleList, eventsInBin, eventsList } = this.props
+        const { connectDropTarget, canReceive, isHovered, peopleInBin, peopleList, eventsInBin, eventsList, emptyBin } = this.props
 
         const dndStyles = {
             color: `${canReceive ?
@@ -40,19 +40,21 @@ class RecycleBin extends Component {
 
 
 
-        return connectDropTarget(
+        return (
             <div style={basicStyles}>
                 {connectDropTarget(<h1 style={dndStyles}> Recycle bin </h1>)}
                 {personCardList.length ?
                     <div>
                         <h2>Deleted persons: </h2>
                         <ul>{personCardList}</ul>
-                    </div>: null}
+                    </div> : null}
                 {eventsCardList.length ?
                     <div>
                         <h2>Deleted events: </h2>
                         <ul>{eventsCardList}</ul>
-                    </div>: null}
+                    </div> : null}
+                {eventsCardList.length || personCardList.length ?
+                    <button onClick={emptyBin}>Empty bin</button> : null}
             </div>
         )
     }
@@ -85,4 +87,4 @@ export default connect((state) => ({
     peopleList:  peopleListSelector(state),
     eventsInBin: eventsInBinSelector(state),
     eventsList:  eventListSelector(state)
-}), {eventToBin, personToBin })((DropTarget(['person', 'event'], specTarget, collectTarget)(RecycleBin)))
+}), {eventToBin, personToBin, emptyBin })((DropTarget(['person', 'event'], specTarget, collectTarget)(RecycleBin)))
