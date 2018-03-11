@@ -20,6 +20,8 @@ export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
 export const ADD_EVENT = `${prefix}/ADD_EVENT`
 
+export const MOVE_PERSON_TO_TRASH = `${prefix}/MOVE_PERSON_TO_TRASH`
+
 /**
  * Reducer
  * */
@@ -80,6 +82,13 @@ export function addEventToPerson(eventUid, personUid) {
     return {
         type: ADD_EVENT,
         payload: { eventUid, personUid }
+    }
+}
+
+export function movePersonToTrash(personUid) {
+    return {
+        type: MOVE_PERSON_TO_TRASH,
+        payload: personUid
     }
 }
 
