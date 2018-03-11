@@ -28,12 +28,3 @@ export function fbToEntities(values, DataRecord) {
             new OrderedMap({})
         )
 }
-
-/*
-export function fbToEntities(values, DataRecord) {
-    return  values ? Object.entries(values)
-            .reduce(
-                (acc, [uid, value]) => acc.set(uid, new DataRecord({ uid, ...value })),
-                new OrderedMap({})
-            ) : new OrderedMap({})
-}*/

@@ -1,4 +1,4 @@
-import {all, take, takeEvery, select, put, call} from 'redux-saga/effects'
+import {all, takeEvery, select, put} from 'redux-saga/effects'
 import {appName} from '../config'
 import {Record, Set} from 'immutable'
 import {createSelector} from 'reselect'
