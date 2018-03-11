@@ -19,6 +19,7 @@ export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
 export const ADD_EVENT = `${prefix}/ADD_EVENT`
+export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`
 
 export const REMOVE_PERSON = `${prefix}/REMOVE_PERSON`
 export const REMOVE_PERSON_SUCCESS = `${prefix}/REMOVE_PERSON_SUCCESS`
@@ -50,6 +51,9 @@ export default function reducer(state = new ReducerState(), action) {
 
         case REMOVE_PERSON_SUCCESS:
             return state.update('entities', entities => entities.delete(payload.uid) )
+
+        case ADD_EVENT_SUCCESS:
+            return state.setIn(['entities', payload.personUid, 'events'], events => events.push(payload.eventUid) )
 
         default:
             return state
@@ -85,7 +89,7 @@ export function fetchAllPeople() {
 export function addEventToPerson(eventUid, personUid) {
     return {
         type: ADD_EVENT,
-        payload: { eventUid, personUid }
+        meta: { eventUid, personUid }
     }
 }
 
@@ -152,10 +156,29 @@ export function* removePersonSaga({ meta: { uid } }) {
     }
 }
 
+export function* addEventToPersonSaga({ meta: { eventUid, personUid } }) {
+    try{
+        const ref = firebase.database().ref('people').child(`${personUid}/events`)
+
+        yield call([ref, ref.push], eventUid )
+
+        yield put({
+            type: ADD_EVENT_SUCCESS,
+            payload: {
+                personUid,
+                eventUid
+            }
+        })
+    } catch(e) {
+        console.log('can\'t add event to person because', e)
+    }
+}
+
 export const saga = function * () {
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
-        takeEvery(REMOVE_PERSON, removePersonSaga )
+        takeEvery(REMOVE_PERSON, removePersonSaga ),
+        takeEvery(ADD_EVENT, addEventToPersonSaga )
     ])
 }
