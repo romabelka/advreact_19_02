@@ -34,8 +34,9 @@ class Bucket extends Component {
 
 const spec = {
     drop(props, monitor) {
-        const personItem = monitor.getItem()
-        //console.log('spec', 'props: ', props, 'person: ', personItem);
+        const item = monitor.getItem()
+        const type = monitor.getItemType()
+        //console.log( 'item: ', item, 'type: ', type);
     }
 }
 
