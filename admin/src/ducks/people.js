@@ -1,7 +1,7 @@
 import {appName} from '../config'
 import {Record, OrderedMap} from 'immutable'
 import {createSelector} from 'reselect'
-import {put, call, all, takeEvery} from 'redux-saga/effects'
+import {put, call, all, select, takeEvery} from 'redux-saga/effects'
 import {reset} from 'redux-form'
 import firebase from 'firebase'
 import {fbToEntities} from './utils'
@@ -18,7 +18,8 @@ export const ADD_PERSON_SUCCESS = `${prefix}/ADD_PERSON_SUCCESS`
 export const FETCH_ALL_REQUEST = `${prefix}/FETCH_ALL_REQUEST`
 export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 
-export const ADD_EVENT = `${prefix}/ADD_EVENT`
+export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`
+export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`
 
 /**
  * Reducer
@@ -44,6 +45,9 @@ export default function reducer(state = new ReducerState(), action) {
 
         case FETCH_ALL_SUCCESS:
             return state.set('entities', fbToEntities(payload, PersonRecord))
+
+        case ADD_EVENT_SUCCESS:
+            return state.setIn(['entities', payload.personUid, 'events'], payload.events)
 
         default:
             return state
@@ -78,7 +82,7 @@ export function fetchAllPeople() {
 
 export function addEventToPerson(eventUid, personUid) {
     return {
-        type: ADD_EVENT,
+        type: ADD_EVENT_REQUEST,
         payload: { eventUid, personUid }
     }
 }
@@ -117,9 +121,24 @@ export function * fetchAllSaga() {
     })
 }
 
+export function * addEventToPersonSaga({ payload: { eventUid, personUid } }) {
+    const eventsRef = firebase.database().ref(`people/${personUid}/events`)
+
+    const state = yield select(stateSelector)
+    const events = state.getIn(['entities', personUid, 'events']).concat(eventUid)
+
+    yield call([eventsRef, eventsRef.set], events)
+
+    yield put({
+        type: ADD_EVENT_SUCCESS,
+        payload: { events, personUid }
+    })
+}
+
 export const saga = function * () {
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
         takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+        takeEvery(ADD_EVENT_REQUEST, addEventToPersonSaga)
     ])
 }

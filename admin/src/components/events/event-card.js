@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
-import { addEventToPerson } from '../../ducks/people'
+import { addEventToPerson, peopleListSelector } from '../../ducks/people'
 
 const basicStyles = {
-    width: 400,
-    height: 100,
+    width: 500,
+    height: 150,
 }
 
 class EventCard extends Component {
@@ -14,7 +14,8 @@ class EventCard extends Component {
     };
 
     render() {
-        const { event, connectDropTarget, canReceive, isHovered } = this.props
+        const { event, people, connectDropTarget, canReceive, isHovered } = this.props
+        const peopleList = people.map(person => person.email).join(', ')
 
         const dndStyles = {
             border: `1px solid ${canReceive 
@@ -29,6 +30,7 @@ class EventCard extends Component {
             <div style={{...basicStyles, ...dndStyles}}>
                 <h2>{event.title}</h2>
                 <h4>{event.where}</h4>
+                <h3>{peopleList}</h3>
             </div>
         )
     }
@@ -50,4 +52,10 @@ const collect = (connect, monitor) => ({
     isHovered: monitor.isOver()
 })
 
-export default connect(null, { addEventToPerson })(DropTarget(['person'], spec, collect)(EventCard))
+export default connect((state, props) => {
+//    const people = peopleListSelector(state)
+//    debugger
+    return {
+        people: peopleListSelector(state).filter(person => person.events.includes(props.event.uid))
+    }
+}, { addEventToPerson })(DropTarget(['person'], spec, collect)(EventCard))
