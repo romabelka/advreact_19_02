@@ -170,11 +170,19 @@ export function * syncPeopleWithShortPolling() {
         }
     }
 }
+*/
 
+/*
 export function * cancellableSyncSaga() {
     const task = yield fork(syncPeopleWithShortPolling)
+    yield race({
+        sync: syncPeopleWithShortPolling(),
+        timeout: delay(5000)
+    })
+/!*
     yield delay(5000)
     yield cancel(task)
+*!/
 }
 */
 
