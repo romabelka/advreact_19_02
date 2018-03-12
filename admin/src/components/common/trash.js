@@ -34,10 +34,14 @@ const collect = (connect, monitor) => ({
 const spec = {
     drop(props, monitor) {
         const item = monitor.getItem()
-        props.deleteEvent(item.uid)
+        const itemType = monitor.getItemType()
+        switch (itemType) {
+            case 'event':
+                return props.deleteEvent(item.uid)
+        }
     }
 }
 
 export default connect(state => ({
     loading: stateSelector(state).loading
-}), { deleteEvent })(DropTarget('event', spec, collect)(Trash))
+}), { deleteEvent })(DropTarget(['event', 'people'], spec, collect)(Trash))
