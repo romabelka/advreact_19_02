@@ -1,8 +1,8 @@
 import {appName} from '../config'
 import {Record, OrderedMap} from 'immutable'
 import {createSelector} from 'reselect'
-import {put, call, all, select, takeEvery, fork, spawn, cancel, cancelled} from 'redux-saga/effects'
-import {delay} from 'redux-saga'
+import {put, call, all, select, takeEvery, take, fork, spawn, cancel, cancelled} from 'redux-saga/effects'
+import {delay, eventChannel} from 'redux-saga'
 import {reset} from 'redux-form'
 import firebase from 'firebase'
 import {fbToEntities} from './utils'
@@ -133,6 +133,27 @@ export function * addEventToPersonSaga({ payload: { eventUid, personUid } }) {
     })
 }
 
+const createPeopleChannel = () => eventChannel(emit => {
+    const callback = (data) => emit({ data })
+    firebase.database().ref('people').on('value', callback)
+
+    return () => firebase.database().ref('people').off('value', callback)
+})
+
+export function * syncRealtime() {
+    const channel = yield call(createPeopleChannel)
+
+    while (true) {
+        const { data } = yield take(channel)
+
+        yield put({
+            type: FETCH_ALL_SUCCESS,
+            payload: data.val()
+        })
+    }
+}
+
+/*
 export function * syncPeopleWithShortPolling() {
     let firstTime = true
     try {
@@ -155,13 +176,14 @@ export function * cancellableSyncSaga() {
     yield delay(5000)
     yield cancel(task)
 }
+*/
 
 export const saga = function * () {
-    yield spawn(cancellableSyncSaga)
+    yield spawn(syncRealtime)
 
     yield all([
         takeEvery(ADD_PERSON, addPersonSaga),
-        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+//        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
         takeEvery(ADD_EVENT_REQUEST, addEventToPersonSaga),
     ])
 }
