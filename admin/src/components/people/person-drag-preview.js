@@ -8,11 +8,8 @@ class PersonDragPreview extends Component {
     };
 
     render() {
-        return (
-            <div>
-                <h1>{this.props.person.email}</h1>
-            </div>
-        )
+        const { person } = this.props
+        return (person ? <div><h1>{person.email}</h1></div> : null)
     }
 }
 

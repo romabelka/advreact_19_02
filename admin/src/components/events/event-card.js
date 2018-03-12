@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
-import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
+import { DropTarget } from 'react-dnd'
+import { DragSource } from 'react-dnd'
+import { getEmptyImage } from 'react-dnd-html5-backend'
+import DragPreview from './event-drag-preview'
 import { addEventToPerson } from '../../ducks/people'
 
 const basicStyles = {
@@ -9,45 +12,65 @@ const basicStyles = {
 }
 
 class EventCard extends Component {
-    static propTypes = {
-
-    };
+    componentDidMount() {
+        this.props.connectPreview(getEmptyImage())
+    }
 
     render() {
-        const { event, connectDropTarget, canReceive, isHovered } = this.props
+        const { event, connectDropTarget, canReceive, isHovered, connectDragSource, isDragging } = this.props
 
         const dndStyles = {
-            border: `1px solid ${canReceive 
-                ? isHovered 
+            border: `1px solid ${canReceive
+                ? isHovered
                     ? 'green'
                     : 'red'
                 : 'black'
-            }`
+                }`,
+            opacity: isDragging ? 0.2 : 1
         }
-
         return connectDropTarget(
-            <div style={{...basicStyles, ...dndStyles}}>
-                <h2>{event.title}</h2>
+            <div style={{ ...basicStyles, ...dndStyles }}>
+                {connectDragSource(<h2>{event.title}</h2>)}
                 <h4>{event.where}</h4>
             </div>
         )
     }
 }
 
-const spec = {
+const specDrop = {
     drop(props, monitor) {
         const personItem = monitor.getItem()
-/*
-        console.log('---', 'event: ', props.event.uid, 'person: ', personItem.id)
-*/
+        /*
+                console.log('---', 'event: ', props.event.uid, 'person: ', personItem.id)
+        */
         props.addEventToPerson(props.event.uid, personItem.id)
     },
 }
 
-const collect = (connect, monitor) => ({
+const collectDrop = (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
     canReceive: monitor.canDrop(),
     isHovered: monitor.isOver()
 })
 
-export default connect(null, { addEventToPerson })(DropTarget(['person'], spec, collect)(EventCard))
+const specDrag = {
+    beginDrag(props) {
+        return {
+            id: props.event.uid,
+            DragPreview
+        }
+    }
+}
+
+const collectDrag = (connect, monitor) => ({
+    connectDragSource: connect.dragSource(),
+    connectPreview: connect.dragPreview(),
+    isDragging: monitor.isDragging(),
+})
+
+
+export default connect(null, { addEventToPerson })(
+    DropTarget('person', specDrop, collectDrop)(
+        DragSource('event', specDrag, collectDrag)(EventCard)
+    )
+)

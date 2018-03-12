@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DropTarget } from 'react-dnd'
 import { connect } from 'react-redux'
 import { movePersonToTrash } from '../../ducks/people'
+import { moveEventToTrash } from '../../ducks/events'
 
 const basicStyles = {
   width: 200,
@@ -30,9 +31,18 @@ class TrashCan extends Component {
 
 const spec = {
   drop(props, monitor) {
-    const personItem = monitor.getItem()
-    console.log('---', 'person: ', personItem.id)
-    props.movePersonToTrash(personItem.id)
+    const id = monitor.getItem().id;
+    const type = monitor.getItemType()
+
+    switch (type) {
+      case `person`:
+        props.movePersonToTrash(id)
+        break
+      case `event`:
+        props.moveEventToTrash(id)
+        break
+      default:
+    }
   }
 }
 
@@ -43,9 +53,10 @@ const collect = (connect, monitor) => ({
 })
 
 const mapDispatchToProps = {
-  movePersonToTrash
+  movePersonToTrash,
+  moveEventToTrash
 };
 
 export default connect(null, mapDispatchToProps)(
-  DropTarget(['person'], spec, collect)(TrashCan)
+  DropTarget(['person', 'event'], spec, collect)(TrashCan)
 )

@@ -47,6 +47,9 @@ export default function reducer(state = new ReducerState(), action) {
         case FETCH_ALL_SUCCESS:
             return state.set('entities', fbToEntities(payload, PersonRecord))
 
+        case MOVE_PERSON_TO_TRASH:
+            return state.update('entities', entities => entities.remove(payload))
+
         default:
             return state
     }

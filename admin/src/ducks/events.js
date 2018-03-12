@@ -1,9 +1,9 @@
-import {all, take, takeEvery, select, put, call} from 'redux-saga/effects'
-import {appName} from '../config'
-import {Record, OrderedMap, OrderedSet} from 'immutable'
+import { all, take, takeEvery, select, put, call } from 'redux-saga/effects'
+import { appName } from '../config'
+import { Record, OrderedMap, OrderedSet } from 'immutable'
 import firebase from 'firebase'
-import {createSelector} from 'reselect'
-import {fbToEntities} from './utils'
+import { createSelector } from 'reselect'
+import { fbToEntities } from './utils'
 
 /**
  * Constants
@@ -20,6 +20,7 @@ export const FETCH_LAZY_START = `${prefix}/FETCH_LAZY_START`
 export const FETCH_LAZY_SUCCESS = `${prefix}/FETCH_LAZY_SUCCESS`
 
 export const SELECT_EVENT = `${prefix}/SELECT_EVENT`
+export const MOVE_EVENT_TO_TRASH = `${prefix}/MOVE_EVENT_TO_TRASH`
 
 /**
  * Reducer
@@ -42,7 +43,7 @@ export const EventRecord = Record({
 })
 
 export default function reducer(state = new ReducerRecord(), action) {
-    const {type, payload} = action
+    const { type, payload } = action
 
     switch (type) {
         case FETCH_ALL_START:
@@ -67,6 +68,9 @@ export default function reducer(state = new ReducerRecord(), action) {
                 : selected.add(payload.uid)
             )
 
+        case MOVE_EVENT_TO_TRASH:
+            return state.update('selected', selected => selected.remove(payload.uid))
+
         default:
             return state
     }
@@ -85,6 +89,8 @@ export const eventListSelector = createSelector(entitiesSelector, entities => en
 export const selectedEventsList = createSelector(entitiesSelector, selectedEventsIds,
     (entities, ids) => ids.map(id => entities.get(id))
 )
+export const idSelector = (_, props) => props.id
+export const eventSelector = createSelector(entitiesSelector, idSelector, (entities, id) => entities.get(id))
 
 /**
  * Action Creators
@@ -109,6 +115,13 @@ export function fetchLazy() {
     }
 }
 
+export function moveEventToTrash(uid) {
+    return {
+        type: MOVE_EVENT_TO_TRASH,
+        payload: { uid }
+    }
+}
+
 /**
  * Sagas
  * */
@@ -128,14 +141,14 @@ export function* fetchAllSaga() {
     })
 }
 
-export const fetchLazySaga = function * () {
+export const fetchLazySaga = function* () {
     while (true) {
         yield take(FETCH_LAZY_REQUEST)
 
         const state = yield select(stateSelector)
 
         if (state.loading || state.loaded) continue
-//        if (state.loaded) return
+        //        if (state.loaded) return
 
         yield put({
             type: FETCH_LAZY_START
