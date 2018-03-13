@@ -1,4 +1,5 @@
-import {all, takeEvery, take, put, apply, call} from 'redux-saga/effects'
+import {all, takeEvery, take, put, apply, call, spawn} from 'redux-saga/effects'
+import {eventChannel} from 'redux-saga'
 import {appName} from '../config'
 import {createSelector} from 'reselect'
 import {Record} from 'immutable'
@@ -20,6 +21,9 @@ export const SIGN_UP_REQUEST = `${prefix}/SIGN_UP_REQUEST`
 export const SIGN_UP_START = `${prefix}/SIGN_UP_START`
 export const SIGN_UP_SUCCESS = `${prefix}/SIGN_UP_SUCCESS`
 export const SIGN_UP_ERROR = `${prefix}/SIGN_UP_ERROR`
+
+export const SIGN_OUT_REQUEST = `${prefix}/SIGN_OUT_REQUEST`
+export const SIGN_OUT_SUCCESS = `${prefix}/SIGN_OUT_SUCCESS`
 
 /**
  * Reducer
@@ -51,6 +55,9 @@ export default function reducer(state = new ReducerRecord(), action) {
             return state
                 .set('loading', false)
                 .set('error', payload.error.message)
+
+        case SIGN_OUT_SUCCESS:
+            return state.set('user', null)
 
         default:
             return state
@@ -84,16 +91,36 @@ export function signUp(email, password) {
     }
 }
 
-firebase.auth().onAuthStateChanged(user => {
+/*firebase.auth().onAuthStateChanged(user => {
     if (user) window.store.dispatch({
         type: SIGN_IN_SUCCESS,
         payload: { user }
     })
-})
+})*/
 
 /**
  * Sagas
  */
+
+const createAuthChangeChannel = () => eventChannel(emit => {
+    return firebase.auth().onAuthStateChanged(user => emit({ user }))
+})
+
+export function * authChangeSaga() {
+    const channel = yield call(createAuthChangeChannel)
+
+    while (true) {
+        const { user } = yield take(channel)
+        if (user) {
+            yield put({
+                type: SIGN_IN_SUCCESS,
+                payload: { user },
+            })
+        } else {
+            yield put(replace('/auth'))
+        }
+    }
+}
 
 export const signUpSaga = function * () {
     while (true) {
@@ -134,6 +161,14 @@ export const signInSaga = function * (action) {
     }
 }
 
+export const signOutSaga = function * () {
+    const auth = firebase.auth()
+    yield call([auth, auth.signOut])
+    yield put({
+        type: SIGN_OUT_SUCCESS,
+    })
+}
+
 export function * watchStatusChangeSaga() {
     while (true) {
         yield take(SIGN_IN_SUCCESS)
@@ -144,8 +179,11 @@ export function * watchStatusChangeSaga() {
 
 
 export const saga = function * () {
+    yield spawn(authChangeSaga)
+
     yield all([
         takeEvery(SIGN_IN_REQUEST, signInSaga),
+        takeEvery(SIGN_OUT_REQUEST, signOutSaga),
         signUpSaga(),
         watchStatusChangeSaga()
     ])
