@@ -15,6 +15,7 @@ class App extends Component {
                     <li><NavLink to = '/admin' activeStyle = {{color: 'red'}}>admin</NavLink></li>
                     <li><NavLink to = '/people' activeStyle = {{color: 'red'}}>people</NavLink></li>
                     <li><NavLink to = '/events' activeStyle = {{color: 'red'}}>events</NavLink></li>
+                    <li><NavLink to = '/auth' activeStyle = {{color: 'red'}}>auth</NavLink></li>
                 </ul>
                 <Route path='/auth' component={AuthRoute}/>
                 <ProtectedRoute path='/admin' component={AdminRoute}/>
