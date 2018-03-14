@@ -6,11 +6,13 @@ import ProtectedRoute from './components/common/protected-route'
 import PersonPage from './components/routes/person-page'
 import EventsPage from './components/routes/events-page'
 import CustomDragLayer from './components/common/custom-drag-layer'
+import SignOut from  './components/auth/sign-out'
 
 class App extends Component {
     render() {
         return (
             <div>
+                <SignOut />
                 <ul>
                     <li><NavLink to = '/admin' activeStyle = {{color: 'red'}}>admin</NavLink></li>
                     <li><NavLink to = '/people' activeStyle = {{color: 'red'}}>people</NavLink></li>
