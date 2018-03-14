@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import {peopleListSelector, fetchAllPeople} from '../../ducks/people'
 import {List} from 'react-virtualized'
+import { Motion, spring } from 'react-motion'
 import PersonCard from './person-card'
 
 import 'react-virtualized/styles.css'
@@ -25,9 +26,17 @@ class PeopleList extends Component {
     rowRenderer = ({ style, index, key }) => {
         const person = this.props.people[index]
         return (
-            <div style={style} key={key}>
-                <PersonCard person = {person}/>
-            </div>
+            <Motion
+                defaultStyle={{opacity: 0}}
+                style={{opacity: spring(1, { stiffness: 30 })}}
+                key={key}
+            >
+                {interpolatingStyle => (
+                    <div style={{...style, ...interpolatingStyle}}>
+                        <PersonCard person = {person}/>
+                    </div>
+                )}
+            </Motion>
         )
     }
 }
