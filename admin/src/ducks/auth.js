@@ -110,13 +110,6 @@ const createAuthChannel = () => eventChannel(emit =>
 )
 
 
-/*firebase.auth().onAuthStateChanged(user => {
-    if (user) window.store.dispatch({
-        type: SIGN_IN_SUCCESS,
-        payload: { user }
-    })
-})*/
-
 
 const onAuthChangeSaga  = function* (){
     const channel = yield call(createAuthChannel)
@@ -199,22 +192,12 @@ export const signInSaga = function * (action) {
     }
 }
 
-/*export function * watchStatusChangeSaga() {
-    while (true) {
-        yield take(SIGN_IN_SUCCESS)
-
-        yield (put(replace('/people')))
-    }
-}*/
-
-
 export const saga = function * () {
     yield spawn(onAuthChangeSaga)
 
     yield all([
         takeEvery(SIGN_IN_REQUEST, signInSaga),
         takeEvery(SIGN_OUT_REQUEST, signOutSaga),
-        signUpSaga(),
-        //watchStatusChangeSaga(),
+        signUpSaga()
     ])
 }
