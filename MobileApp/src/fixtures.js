@@ -4902,6 +4902,6 @@ const data = {
   }
 }
 
-const objToArr = obj => Object.entries(([uid, obj]) => ({ uid, ...obj}))
+const objToArr = obj => Object.keys(obj).map((uid) => ({ uid, ...obj[uid]}))
 
 export const eventList = objToArr(data.events)
