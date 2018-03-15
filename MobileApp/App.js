@@ -1,12 +1,13 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import HelloWorld from './src/components/HelloWorld'
+import React from 'react'
+import { StyleSheet, View } from 'react-native'
+//import HelloWorld from './src/components/hello-world'
+import SignIn from './src/components/sign-in'
 
 export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-          <HelloWorld />
+          <SignIn />
       </View>
     );
   }
