@@ -22,6 +22,9 @@ export const FETCH_ALL_SUCCESS = `${prefix}/FETCH_ALL_SUCCESS`
 export const ADD_EVENT_REQUEST = `${prefix}/ADD_EVENT_REQUEST`
 export const ADD_EVENT_SUCCESS = `${prefix}/ADD_EVENT_SUCCESS`
 
+export const REMOVE_PERSON_REQUEST = `${prefix}/REMOVE_PERSON_REQUEST`
+export const REMOVE_PERSON_SUCCESS = `${prefix}/REMOVE_PERSON_SUCCESS`
+
 /**
  * Reducer
  * */
@@ -46,6 +49,9 @@ export default function reducer(state = new ReducerState(), action) {
 
         case ADD_EVENT_SUCCESS:
             return state.setIn(['entities', payload.personUid, 'events'], payload.events)
+
+        case REMOVE_PERSON_SUCCESS:
+            return state.deleteIn(['entities', payload.uid])
 
         default:
             return state
@@ -82,6 +88,13 @@ export function addEventToPerson(eventUid, personUid) {
     return {
         type: ADD_EVENT_REQUEST,
         payload: { eventUid, personUid }
+    }
+}
+
+export function removePerson(uid) {
+    return {
+        type: REMOVE_PERSON_REQUEST,
+        payload: { uid }
     }
 }
 
@@ -153,6 +166,18 @@ export function * syncRealtime() {
     }
 }
 
+export function *removePersonSaga(action) {
+    const { uid } = action.payload
+    const personRef = firebase.database().ref(`people/${uid}`)
+    yield call([personRef, personRef.remove])
+
+    yield put({
+        type: REMOVE_PERSON_SUCCESS,
+        payload: { uid },
+    })
+}
+
+
 /*
 export function * syncPeopleWithShortPolling() {
     let firstTime = true
@@ -193,5 +218,6 @@ export const saga = function * () {
         takeEvery(ADD_PERSON, addPersonSaga),
 //        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
         takeEvery(ADD_EVENT_REQUEST, addEventToPersonSaga),
+        takeEvery(REMOVE_PERSON_REQUEST, removePersonSaga)
     ])
 }

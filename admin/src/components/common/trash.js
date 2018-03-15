@@ -3,6 +3,7 @@ import {DropTarget} from 'react-dnd'
 import {connect} from 'react-redux'
 import { Motion, spring } from 'react-motion'
 import {deleteEvent, stateSelector} from '../../ducks/events'
+import {removePerson} from '../../ducks/people'
 import Loader from './loader'
 
 class Trash extends Component {
@@ -48,10 +49,12 @@ const spec = {
         switch (itemType) {
             case 'event':
                 return props.deleteEvent(item.uid)
+            case 'person':
+                return props.removePerson(item.id)
         }
     }
 }
 
 export default connect(state => ({
     loading: stateSelector(state).loading
-}), { deleteEvent })(DropTarget(['event', 'people'], spec, collect)(Trash))
+}), { deleteEvent, removePerson })(DropTarget(['event', 'person'], spec, collect)(Trash))
