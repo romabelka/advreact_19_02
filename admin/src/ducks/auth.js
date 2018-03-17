@@ -105,19 +105,8 @@ export const signUpSaga = function * () {
         })
 
         try {
-<<<<<<< HEAD
-            const user = yield call([auth, auth.signInWithEmailAndPassword], payload.email, payload.password)
-
-            yield put({
-                type: SIGN_IN_SUCCESS,
-                payload: user
-            })
-
-            yield put(push('/people'));
-=======
             const auth = firebase.auth()
             yield call([auth, auth.createUserWithEmailAndPassword], email, password)
->>>>>>> 5d7b727da6136313c6075b1a314173a5bd88b881
         } catch (error) {
             yield put({
                 type: SIGN_UP_ERROR,

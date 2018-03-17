@@ -16,7 +16,6 @@ class App extends Component {
                     <li><NavLink to = '/events' activeStyle = {{color: 'red'}}>events</NavLink></li>
                 </ul>
                 <Route path='/auth' component={AuthRoute}/>
-                <Route path='/clients' component={ClientRoute}/>
                 <ProtectedRoute path='/admin' component={AdminRoute}/>
                 <ProtectedRoute path="/people" component={PersonPage}/>
                 <ProtectedRoute path="/events" component={EventsPage}/>

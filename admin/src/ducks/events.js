@@ -88,13 +88,20 @@ export function fetchAllEvents() {
 export function selectEvent(uid) {
     return {
         type: SELECT_EVENT,
-        payload: { uid }
+        payload: {uid}
+    }
+}
+
+export function fetchSomeEvents() {
+    return {
+        type: FETCH_SOME_REQUEST
     }
 }
 
 /**
  * Sagas
  * */
+
 
 export function* fetchAllSaga() {
     const ref = firebase.database().ref('events')
@@ -111,8 +118,31 @@ export function* fetchAllSaga() {
     })
 }
 
-export function * saga() {
+export function* fetchNewSaga() {
+    yield put({
+        type: FETCH_SOME_START
+    })
+
+    const entities = yield select(entitiesSelector)
+
+    const lastId = entities.last() ? entities.last().uid : ''
+
+    const ref = firebase.database().ref('events')
+        .orderByKey()
+        .limitToFirst(10)
+        .startAt(lastId)
+
+    const snapshot = yield call([ref, ref.once], 'value')
+
+    yield put({
+        type: FETCH_SOME_SUCCESS,
+        payload: snapshot.val()
+    })
+}
+
+export function* saga() {
     yield all([
-        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga)
+        takeEvery(FETCH_ALL_REQUEST, fetchAllSaga),
+        takeEvery(FETCH_SOME_REQUEST, fetchNewSaga)
     ])
 }
