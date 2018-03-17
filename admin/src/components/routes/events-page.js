@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import EventsTable from '../events/virtualized-table'
+import EventsTable from '../events/virtualized-lazy-table'
 import SelectedEvents from '../events/selected-events'
 
 class EventsPage extends Component {

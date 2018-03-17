@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import AdminRoute from './components/routes/admin'
 import AuthRoute from './components/routes/auth'
 import {Route, NavLink} from 'react-router-dom'
-import ProtectedRoute from './components/common/ProtectedRoute'
+import ProtectedRoute from './components/common/protected-route'
 import PersonPage from './components/routes/person-page'
 import EventsPage from './components/routes/events-page'
+import CustomDragLayer from './components/common/custom-drag-layer'
 
 class App extends Component {
     render() {
@@ -19,6 +20,7 @@ class App extends Component {
                 <ProtectedRoute path='/admin' component={AdminRoute}/>
                 <ProtectedRoute path="/people" component={PersonPage}/>
                 <ProtectedRoute path="/events" component={EventsPage}/>
+                <CustomDragLayer/>
             </div>
         )
     }

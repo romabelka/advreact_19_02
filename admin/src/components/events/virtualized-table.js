@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Table, Column, InfiniteLoader} from 'react-virtualized'
 import {fetchAllEvents, selectEvent, eventListSelector, loadedSelector, loadingSelector} from '../../ducks/events'
-import Loader from '../common/Loader'
+import Loader from '../common/loader'
 import 'react-virtualized/styles.css'
 
 export class EventsTableVirtualized extends Component {
