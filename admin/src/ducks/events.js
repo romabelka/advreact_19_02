@@ -113,7 +113,13 @@ export function fetchAllEvents() {
 export function selectEvent(uid) {
     return {
         type: SELECT_EVENT,
-        payload: { uid }
+        payload: {uid}
+    }
+}
+
+export function fetchSomeEvents() {
+    return {
+        type: FETCH_SOME_REQUEST
     }
 }
 
@@ -134,6 +140,7 @@ export function deleteEvent(uid) {
  * Sagas
  * */
 
+
 export function* fetchAllSaga() {
     const ref = firebase.database().ref('events')
 
@@ -148,6 +155,7 @@ export function* fetchAllSaga() {
         payload: snapshot.val()
     })
 }
+
 
 export const fetchLazySaga = function * () {
     while (true) {
