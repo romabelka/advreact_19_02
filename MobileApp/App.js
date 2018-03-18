@@ -3,6 +3,7 @@ import {StyleSheet, View, Image} from 'react-native'
 //import HelloWorld from './src/components/hello-world'
 //import SignIn from './src/components/sign-in'
 import EventList from './src/components/event-list'
+import EventScreen from './src/components/event-screen'
 import {eventList} from './src/fixtures'
 
 export default class App extends React.Component {
@@ -12,7 +13,8 @@ export default class App extends React.Component {
                 <Image source={require('./assets/images/logo.png')}
                        style={styles.image}
                        resizeMode = {Image.resizeMode.contain}/>
-                <EventList events={eventList}/>
+                 <EventScreen event={eventList[0]}/>
+                 <EventList events={eventList}/>
             </View>
         );
     }
