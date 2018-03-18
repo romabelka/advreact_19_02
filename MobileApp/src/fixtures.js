@@ -4904,4 +4904,18 @@ const data = {
 
 const objToArr = obj => Object.keys(obj).map((uid) => ({ uid, ...obj[uid]}))
 
+const groupByLetters = arr => arr.reduce((acc, item) => {
+    const key = item.title[0]
+
+    if (acc[key]) {
+        acc[key].push(item)
+    } else {
+        acc[key] = [item]
+    }
+
+    return acc
+}, {})
+
 export const eventList = objToArr(data.events)
+
+export const groupedEventList = groupByLetters(eventList)
