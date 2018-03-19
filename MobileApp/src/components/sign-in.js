@@ -1,51 +1,37 @@
 import React, { Component } from 'react'
 import {View, Text, TextInput, TouchableOpacity, Platform} from 'react-native'
-import {observer} from 'mobx-react'
-import {observable, computed, action} from 'mobx'
+import {observer, inject} from 'mobx-react'
 
-@observer
+@inject('auth') @observer
 class SignIn extends Component {
-    @observable email = ''
-    @observable password = ''
-    @computed get summary() {
-        return this.email + this.password.length
-    }
-
     render() {
+        const {auth} = this.props
         return (
             <View style = {styles.container}>
-                <Text>Summary: {this.summary}</Text>
                 <Text>Please Sign In:</Text>
                 <View>
                     <Text>Email:</Text>
                     <TextInput
-                        value = {this.email}
+                        value = {auth.email}
                         style = {styles.input}
-                        onChangeText = {this.handleEmailChange}
+                        onChangeText = {auth.setEmail}
                         keyboardType = 'email-address'
                     />
                 </View>
                 <View>
                     <Text>Password:</Text>
                     <TextInput
-                        value = {this.password}
+                        value = {auth.password}
                         style = {styles.input}
-                        onChangeText = {this.handlePasswordChange}
+                        onChangeText = {auth.setPassword}
                         secureTextEntry
                     />
                 </View>
-                <TouchableOpacity onPress = {this.handleSubmit}>
+                <TouchableOpacity onPress = {this.props.auth.signIn}>
                     <Text>Submit</Text>
                 </TouchableOpacity>
             </View>
         )
-    }
-
-    @action handleEmailChange = email => this.email = email
-    @action handlePasswordChange = password => this.password = password
-
-    handleSubmit = () => {
-        this.props.navigation.navigate('eventList')
     }
 }
 
