@@ -8,7 +8,7 @@ class Card extends Component {
 
     render() {
         return (
-            <View style = {styles.container}>
+            <View container = {styles.container}>
                 {this.props.children}
             </View>
         )
@@ -17,14 +17,15 @@ class Card extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 10,
-        backgroundColor: '#ddd',
+        marginBottom: 15,
+        elevation: 5,
         shadowColor: '#000',
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.8,
         shadowOffset: {
-            width: 2,
-            height: 2
-        }
+            height: 2,
+            width: 0
+        },
+        backgroundColor: '#FDFDFD'
     }
 })
 
