@@ -14,11 +14,9 @@ class AuthStore extends BasicStore {
         firebase.auth().signInWithEmailAndPassword(this.email, this.password)
             .then(action(user => {
                 this.user = user
-                this.getStore('navigation').goTo('eventList')
+                this.getStore('navigation').leaveSignIn()//'eventList')
             }))
     }
-
-
 }
 
 export default AuthStore
