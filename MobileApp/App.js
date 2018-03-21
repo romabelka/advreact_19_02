@@ -4,6 +4,7 @@ import {configure} from 'mobx'
 import {Provider, observer} from 'mobx-react'
 import {addNavigationHelpers} from 'react-navigation'
 import AppNavigator from './src/app-navigator'
+import MyTabNavigator from './src/tab-navigator'
 import stores from './src/stores'
 configure({ enforceActions: true })
 
@@ -17,3 +18,4 @@ export default class App extends React.Component {
         );
     }
 }
+

@@ -4603,6 +4603,10 @@ mkpath@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/mkpath/-/mkpath-0.1.0.tgz#7554a6f8d871834cc97b5462b122c4c124d6de91"
 
+mobx-navigation@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mobx-navigation/-/mobx-navigation-1.0.0.tgz#931f5b518ae1030a3622bb72769e1a773d3a3cfe"
+
 mobx-react@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-5.0.0.tgz#8d5a33be376fa22b184a6f555d40a6a3a8459a16"
