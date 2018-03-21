@@ -22,6 +22,15 @@ class NavigationStore extends BasicStore {
             routeName
         }))
     }
+
+    leaveSignIn = () => {
+        const signInRouteKey = this.settings.state.routes.find(x => x.routeName === 'signIn').key
+
+        this.dispatch(NavigationActions.replace({
+            routeName: 'eventsAndPeople',
+            key:  signInRouteKey
+        }))
+    }
 }
 
 export default NavigationStore
