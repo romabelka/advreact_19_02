@@ -1,14 +1,19 @@
-import {observable, action} from 'mobx'
+import {observable, action, computed} from 'mobx'
 import firebase from 'firebase'
 import BasicStore from './basic-store'
+import {mapToArray} from "../utils/fb-helpers";
 
-class AuthStore extends BasicStore {
-    @observable people = []
+class PeopleStore extends BasicStore {
+    @observable peopleList = {}
     @observable isLoaded = false
     @observable loading = false
 
+    @computed get peopleMapped() {
+        return mapToArray(this.peopleList)
+    }
+
     @action loadPeople = people => {
-        this.people = people
+        this.peopleList = people
         this.loading = false
         this.isLoaded = true
     }
@@ -17,12 +22,13 @@ class AuthStore extends BasicStore {
         this.loading = true
     }
 
-    signIn = () => {
-        /*firebase.??
-            .then(data => {
-                ??
-            }))*/
+    getPeople = () => {
+        this.loadPeopleRequest()
+        firebase.database().ref('people').once('value')
+            .then(snapshot => {
+                this.loadPeople(snapshot.val())
+            })
     }
 }
 
-export default AuthStore
+export default PeopleStore
