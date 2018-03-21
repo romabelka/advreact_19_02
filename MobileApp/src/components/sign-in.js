@@ -1,46 +1,38 @@
 import React, { Component } from 'react'
 import {View, Text, TextInput, TouchableOpacity, Platform} from 'react-native'
+import {observer, inject} from 'mobx-react'
 
+@inject('auth') @observer
 class SignIn extends Component {
-    state = {
-        email: '',
-        password: ''
-    }
-
     render() {
-        const { email, password } = this.state
+        const {auth} = this.props
         return (
             <View style = {styles.container}>
                 <Text>Please Sign In:</Text>
                 <View>
                     <Text>Email:</Text>
                     <TextInput
-                        value = {email}
+                        value = {auth.email}
                         style = {styles.input}
-                        onChangeText = {this.handleEmailChange}
+                        onChangeText = {auth.setEmail}
                         keyboardType = 'email-address'
                     />
                 </View>
                 <View>
                     <Text>Password:</Text>
                     <TextInput
-                        value = {password}
+                        value = {auth.password}
                         style = {styles.input}
-                        onChangeText = {this.handlePasswordChange}
+                        onChangeText = {auth.setPassword}
                         secureTextEntry
                     />
                 </View>
-                <TouchableOpacity onPress = {this.handleSubmit}>
+                <TouchableOpacity onPress = {this.props.auth.signIn}>
                     <Text>Submit</Text>
                 </TouchableOpacity>
             </View>
         )
     }
-
-    handleEmailChange = email => this.setState({ email })
-    handlePasswordChange = password => this.setState({ password })
-
-    handleSubmit = () => console.log('---', this.state)
 }
 
 const styles = {

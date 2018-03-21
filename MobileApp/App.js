@@ -1,10 +1,13 @@
+import './src/fb-config'
 import React from 'react'
-import {StyleSheet, View, Image} from 'react-native'
-//import HelloWorld from './src/components/hello-world'
-//import SignIn from './src/components/sign-in'
-import EventList from './src/components/event-list'
-import {eventList} from './src/fixtures'
+import {configure} from 'mobx'
+import {Provider, observer} from 'mobx-react'
+import {addNavigationHelpers} from 'react-navigation'
+import AppNavigator from './src/app-navigator'
+import stores from './src/stores'
+configure({ enforceActions: true })
 
+@observer
 export default class App extends React.Component {
     constructor(props) {
         super(props);
@@ -14,34 +17,10 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <Image source={require('./assets/images/logo.png')}
-                       style={styles.image}
-                       resizeMode = {Image.resizeMode.contain}/>
-                <EventList
-                    events={eventList}
-                    handleCheckEvent={this.onCheckEvent}
-                    currentEvent={this.state.currentEvent}
-                />
-            </View>
+            <Provider {...stores}>
+                <AppNavigator navigation = {addNavigationHelpers(stores.navigation.settings)}/>
+            </Provider>
         );
     }
-
-    onCheckEvent = (id) => () => {
-        this.setState({currentEvent : id})
-    };
-
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    image: {
-        width: '100%',
-        height: 100
-    }
-});
