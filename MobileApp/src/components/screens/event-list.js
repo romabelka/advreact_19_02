@@ -9,7 +9,8 @@ class EventListScreen extends Component {
     };
 
     static navigationOptions = {
-        title: 'Event List'
+        title: 'Event List',
+        headerLeft: null
     }
 
     render() {
