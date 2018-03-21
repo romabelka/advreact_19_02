@@ -11,7 +11,7 @@ class AuthStore extends BasicStore {
     @action setPassword = password => this.password = password
 
     signIn = () => {
-        this.getStore('navigation').goTo('eventList')
+        this.getStore('navigation').goTo('people')
     }
 
 
