@@ -9,12 +9,6 @@ configure({ enforceActions: true })
 
 @observer
 export default class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {currentEvent: null};
-        this.onCheckEvent = this.onCheckEvent.bind(this);
-    }
-
     render() {
         return (
             <Provider {...stores}>

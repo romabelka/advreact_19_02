@@ -23,9 +23,9 @@
     "firebase": "^4.11.0",
     "lodash": "^4.17.5",
     "mobx": "^4.1.0",
+    "mobx-navigation": "^1.0.0",
     "mobx-react": "^5.0.0",
     "react": "16.2.0",
-
     "react-native": "0.52.0",
     "react-navigation": "^1.5.7"
   }
