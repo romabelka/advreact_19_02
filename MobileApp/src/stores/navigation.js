@@ -1,10 +1,11 @@
-import {computed, observable, action} from 'mobx'
-import {NavigationActions} from 'react-navigation'
-import AppNavigator from '../app-navigator'
 import BasicStore from './basic-store'
+import {observable, action, computed, toJS} from 'mobx'
+import AppNavigator from '../app-navigator'
+import {NavigationActions} from 'react-navigation'
 
-class NavigationStore extends BasicStore {
-    @observable state = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('signIn'))
+export default class NavigationStore extends BasicStore {
+    @observable state = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('auth'))
+
     @action dispatch = (event) => {
         this.state = AppNavigator.router.getStateForAction(event, this.state)
     }
@@ -12,16 +13,25 @@ class NavigationStore extends BasicStore {
     @computed get settings() {
         return {
             dispatch: this.dispatch,
-            state: this.state,
+            state: toJS(this.state),
             addListener: () => {}
         }
     }
 
-    goTo = (routeName) => {
+    goTo(routeName) {
         this.dispatch(NavigationActions.navigate({
             routeName
         }))
     }
-}
 
-export default NavigationStore
+    reset(routeName, params) {
+        const action = NavigationActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName, params })
+            ]
+        })
+
+        this.dispatch(action)
+    }
+}
