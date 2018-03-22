@@ -1,19 +1,30 @@
 import React, { Component } from 'react'
 import {StyleSheet} from 'react-native'
 import EventList from '../events/event-list'
-import {eventList} from '../../fixtures'
+import Loader from '../common/loader'
+import {inject, observer} from 'mobx-react'
 
+
+@inject('events') @observer
 class EventListScreen extends Component {
     static propTypes = {
 
     };
+
+    componentDidMount()
+    {
+        this.props.events.fetchAll()
+    }
 
     static navigationOptions = {
         title: 'Event List'
     }
 
     render() {
-        return <EventList onEventPress = {this.onEventPress} events = {eventList}/>
+       //console.log('--', this.props.events)
+        const {loading, eventList} = this.props.events
+        console.log('----', loading);
+        return loading ? <Loader /> :  <EventList onEventPress = {this.onEventPress} events = {eventList}/>
     }
 
     onEventPress = (event) => this.props.navigation.navigate('event', { uid: event.uid })
