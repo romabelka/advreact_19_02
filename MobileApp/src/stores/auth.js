@@ -10,14 +10,13 @@ class AuthStore extends BasicStore {
     @action setEmail = email => this.email = email
     @action setPassword = password => this.password = password
 
-    signIn = () => {
-        firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-            .then(action(user => {
-                this.user = user
-                this.getStore('navigation').reset('lists')
-            }))
+    constructor(...args) {
+        super(...args)
+
+        firebase.auth().onAuthStateChanged(action(user => this.user = user))
     }
 
+    signIn = () => firebase.auth().signInWithEmailAndPassword(this.email, this.password)
 
 }
 

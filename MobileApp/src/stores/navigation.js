@@ -1,9 +1,25 @@
 import BasicStore from './basic-store'
-import {observable, action, computed, toJS} from 'mobx'
+import {observable, action, computed, toJS, autorun} from 'mobx'
 import AppNavigator from '../app-navigator'
 import {NavigationActions} from 'react-navigation'
 
 export default class NavigationStore extends BasicStore {
+    constructor(...args) {
+        super(...args)
+
+        let firstRun = true
+
+        autorun(() => {
+            const {user} = this.getStore('auth')
+
+            if (!firstRun) {
+                this.reset(user ? 'lists' : 'auth')
+            }
+
+            firstRun = false
+        })
+    }
+
     @observable state = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('auth'))
 
     @action dispatch = (event) => {
