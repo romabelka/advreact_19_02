@@ -6,7 +6,11 @@ import BasicStore from './basic-store'
 class NavigationStore extends BasicStore {
     @observable state = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('signIn'))
     @action dispatch = (event) => {
-        this.state = AppNavigator.router.getStateForAction(event, this.state)
+        let _state = AppNavigator.router.getStateForAction(event, this.state)
+        _state.routes = _state.routes.filter(item => item.routeName != "signIn")
+        if (_state.index >= _state.routes.length )
+            --_state.index;
+        this.state = _state
     }
 
     @computed get settings() {
