@@ -1,20 +1,20 @@
 import React, { Component } from 'react'
-import {StyleSheet} from 'react-native'
+import {inject, observer} from 'mobx-react'
 import Event from '../events/event'
-import {eventList} from '../../fixtures'
 
-class EventScreen extends Component {
+@inject('events') @observer
+class EventListScreen extends Component {
     static propTypes = {
 
     };
 
-    render() {
-        return <Event event = {eventList[0]} />
+    static navigationOptions = {
+        title: 'event'
+    }
 
+    render() {
+        return <Event event = {this.props.events.entities[this.props.navigation.state.params.uid]}/>
     }
 }
 
-const styles = StyleSheet.create({
-})
-
-export default EventScreen
+export default EventListScreen

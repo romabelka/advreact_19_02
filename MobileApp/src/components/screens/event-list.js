@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import {StyleSheet} from 'react-native'
+import {observer, inject} from 'mobx-react'
+import {View, StyleSheet, ActivityIndicator} from 'react-native'
 import EventList from '../events/event-list'
-import {eventList} from '../../fixtures'
 
+@inject('events')
+@observer
 class EventListScreen extends Component {
     static propTypes = {
 
@@ -12,11 +14,23 @@ class EventListScreen extends Component {
         title: 'Event List'
     }
 
-    render() {
-        return <EventList onEventPress = {this.onEventPress} events = {eventList}/>
+    componentDidMount() {
+        this.props.events.loadAll()
     }
 
-    onEventPress = (event) => this.props.navigation.navigate('event', { uid: event.uid })
+    render() {
+        const {events} = this.props
+        if (events.loading) return this.getLoader()
+        return <EventList onEventPress = {this.handleEventPress} events = {events.list}/>
+    }
+
+    getLoader() {
+        return <View><ActivityIndicator size='large'/></View>
+    }
+
+    handleEventPress = ({ uid }) => {
+        this.props.navigation.navigate('event', { uid })
+    }
 }
 
 const styles = StyleSheet.create({
