@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import {View, Text, Image, StyleSheet} from 'react-native'
+import {View, Text, StyleSheet} from 'react-native'
 import Card from '../common/card'
+import Avatar from './avatar'
 
 class PersonCard extends Component {
     static propTypes = {
@@ -8,10 +9,10 @@ class PersonCard extends Component {
     };
 
     render() {
-        const { email, firstName, lastName } = this.props.person
+        const { email, firstName, lastName, uid } = this.props.person
         return (
             <Card style = {styles.container}>
-                <Image source={{uri: 'http://lorempixel.com/200/100/people/'}} style = {styles.avatar}/>
+                <Avatar personUid={uid}/>
                 <View style = {styles.content}>
                     <Text style = {styles.email}>{email}</Text>
                     <Text>{firstName} {lastName}</Text>
